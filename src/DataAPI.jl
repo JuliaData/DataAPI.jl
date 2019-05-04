@@ -3,11 +3,11 @@ module DataAPI
 """
     defaultarray(T, N)
 
-For a given scalar element of type `T` and number of dimensions `N`, return the appropriate
-array type.
-    
-The default definition returns `Array{T, N}`. Useful for custom scalar types that have a
-more efficient vectorized representation (SOA optimizations).
+For a given element type `T` and number of dimensions `N`, return the appropriate array
+type.
+
+The default definition returns `Array{T, N}`. This function is useful for custom types that
+have a more efficient vectorized representation (usually using SOA optimizations).
 
 This generic function is owned by DataAPI.jl itself, which is the sole provider of the
 default definition.
@@ -21,9 +21,9 @@ defaultarray(::Type{T}, N) where {T} = Array{T, N}
 For a given array `A`, potentially return an optimized "ref array" representation of the
 original array, which can allow for faster comparison and sorting.
 
-The default definition just returns the input array. Useful for scalar types which have a
-"hashed"-like representation where comparison can be much faster than the original scalar
-value, like pooled arrays.
+The default definition just returns the input array. This function is useful for custom
+array types which already store a "hashed"-like representation of elements where comparison
+can be much faster than the original scalar value, like pooled arrays.
 
 This generic function is owned by DataAPI.jl itself, which is the sole provider of the
 default definition.
@@ -37,8 +37,8 @@ refarray(A::AbstractArray) = A
 For the *original* array `A`, and a "ref value" `x` taken from `refarray(A)`, return the
 appropriate *original* value.
 
-By default, `refvalue(A, x)` returns `x`. This allows recovering an original array element
-after operating on the "ref values".
+By default, `refvalue(A, x)` returns `x` (since `refarray(A)` returns `A` by default).
+This allows recovering an original array element after operating on the "ref values".
 
 This generic function is owned by DataAPI.jl itself, which is the sole provider of the
 default definition.
@@ -85,9 +85,9 @@ definition.
 function unwrap end
 
 """
-    describe(x)
+    describe(io::IO, x)
 
-For a value, array, or object `x`, give descriptive statistics.
+For an object `x`, print descriptive statistics to `io`.
 
 This generic function is owned by StatsBase.jl, which is the sole provider of the default
 definition.
