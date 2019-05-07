@@ -52,7 +52,7 @@ refvalue(A::AbstractArray, x) = x
 
 Whenever available, return an indexable object `pool` such that, given the *original* array `A` and
 a "ref value" `x` taken from `refarray(A)`, `pool[x]` is the appropriate *original* value. Return
-`nothing` i such object is not available. If `refpool(A)` is not `nothing`, then
+`nothing` if such object is not available. If `refpool(A)` is not `nothing`, then
 `refpool(A)[refarray(A)[I...]]` must be equal to `A[I...]`.
 
 By default, `refpool(A)` returns `nothing`.
