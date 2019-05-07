@@ -22,8 +22,9 @@ For a given array `A`, potentially return an optimized "ref array" representatio
 original array, which can allow for faster comparison and sorting.
 
 The default definition just returns the input array. This function is useful for custom
-array types which already store a "hashed"-like representation of elements where comparison
-can be much faster than the original scalar value, like pooled arrays.
+array types which already store a "hashed"-like representation of elements where testing
+equality or permuting elements in place can be much faster than the original scalar value,
+like pooled arrays.
 
 This generic function is owned by DataAPI.jl itself, which is the sole provider of the
 default definition.
@@ -35,7 +36,7 @@ refarray(A::AbstractArray) = A
     refvalue(A, x)
 
 For the *original* array `A`, and a "ref value" `x` taken from `refarray(A)`, return the
-appropriate *original* value.
+appropriate *original* value. `refvalue(A, refarray(A)[I...])` must be equal to `A[I...]`.
 
 By default, `refvalue(A, x)` returns `x` (since `refarray(A)` returns `A` by default).
 This allows recovering an original array element after operating on the "ref values".
@@ -45,6 +46,22 @@ default definition.
 """
 function refvalue end
 refvalue(A::AbstractArray, x) = x
+
+"""
+    refpool(A)
+
+Whenever available, return an indexable object `pool` such that, given the *original* array `A` and
+a "ref value" `x` taken from `refarray(A)`, `pool[x]` is the appropriate *original* value. Return
+`nothing` i such object is not available. If `refpool(A)` is not `nothing`, then
+`refpool(A)[refarray(A)[I...]]` must be equal to `A[I...]`.
+
+By default, `refpool(A)` returns `nothing`.
+
+This generic function is owned by DataAPI.jl itself, which is the sole provider of the
+default definition.
+"""
+function refpool end
+refpool(A::AbstractArray) = nothing
 
 """
     nondatavaluetype(T)
