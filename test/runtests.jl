@@ -27,12 +27,23 @@ end
 
 end
 
-@testset "generic functions" begin
+@testset "nondatavaluetype" begin
 
-    @test length(methods(DataAPI.nondatavaluetype)) == 0
-    @test length(methods(DataAPI.datavaluetype)) == 0
-    @test length(methods(DataAPI.unwrap)) == 0
-    @test length(methods(DataAPI.describe)) == 0
+    @test DataAPI.nondatavaluetype(Int64) == Int64
+    @test DataAPI.nondatavaluetype(Union{}) == Union{}
+
+end
+
+@testset "datavaluetype" begin
+
+    @test DataAPI.datavaluetype(Int64) == Int64
+    @test DataAPI.datavaluetype(Union{}) == Union{}
+
+end
+
+@testset "unwrap" begin
+
+    @test DataAPI.unwrap(1) == 1
 
 end
 
