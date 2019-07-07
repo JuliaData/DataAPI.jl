@@ -27,24 +27,4 @@ end
 
 end
 
-@testset "nondatavaluetype" begin
-
-    @test DataAPI.nondatavaluetype(Int64) == Int64
-    @test DataAPI.nondatavaluetype(Union{}) == Union{}
-
-end
-
-@testset "datavaluetype" begin
-
-    @test DataAPI.datavaluetype(Int64) == Int64
-    @test DataAPI.datavaluetype(Union{}) == Union{}
-
-end
-
-@testset "unwrap" begin
-
-    @test DataAPI.unwrap(1) == 1
-
-end
-
 end # @testset "DataAPI"
