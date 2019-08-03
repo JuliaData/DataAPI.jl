@@ -86,10 +86,9 @@ end
     All(cols...)
 Select the union of the selections in `cols`. If `cols == ()`, select all columns.
 """
-struct All{T}
+struct All{T<:Tuple}
     cols::T
+    All(args...) = new{typeof(args)}(args)
 end
-
-All(args...) = All(args)
 
 end # module
