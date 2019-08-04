@@ -75,6 +75,7 @@ function describe end
 
 """
     Between(first, last)
+
 Select the columns between `first` and `last` from a table.
 """
 struct Between{T1 <: Union{Int, Symbol}, T2 <: Union{Int, Symbol}}
@@ -84,6 +85,7 @@ end
 
 """
     All(cols...)
+
 Select the union of the selections in `cols`. If `cols == ()`, select all columns.
 """
 struct All{T<:Tuple}
