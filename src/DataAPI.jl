@@ -144,6 +144,13 @@ Between(x::AbstractString, y::AbstractString) = Between(Symbol(x), Symbol(y))
 Between(x::Union{Int, Symbol}, y::AbstractString) = Between(x, Symbol(y))
 Between(x::AbstractString, y::Union{Int, Symbol}) = Between(Symbol(x), y)
 
+struct BroadcastedBetween{T1 <: Union{Int, Symbol}, T2 <: Union{Int, Symbol}}
+    first::T1
+    last::T2
+end
+
+Base.Broadcast.broadcastable(x::Between) = Ref(BroadcastedBetween(x.first, x.last))
+
 """
     All(cols...)
 
@@ -168,6 +175,13 @@ struct Cols{T<:Tuple}
     cols::T
     Cols(args...) = new{typeof(args)}(args)
 end
+
+struct BroadcastedAll{T<:Tuple}
+    cols::T
+    BroadcastedAll(args...) = new{typeof(args)}(args)
+end
+
+Base.Broadcast.broadcastable(x::All) = Ref(BroadcastedAll(x.cols...))
 
 """
     unwrap(x)
