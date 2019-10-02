@@ -86,11 +86,9 @@ actually occur in the data, and does not preserve their order of appearance in `
 function levels(x)
     T = Base.nonmissingtype(eltype(x))
     levs = convert(AbstractArray{T}, filter!(!ismissing, unique(x)))
-    if hasmethod(isless, Tuple{T, T})
-        try
-            sort!(levs)
-        catch
-        end
+    try
+        sort!(levs)
+    catch
     end
     levs
 end

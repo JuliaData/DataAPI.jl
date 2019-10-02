@@ -36,6 +36,7 @@ end
         [1]
     @test DataAPI.levels(2:-1:1) ==
         DataAPI.levels([2, 1]) ==
+        DataAPI.levels(Any[2, 1]) ==
         DataAPI.levels([2, missing, 1]) ==
         [1, 2]
     @test DataAPI.levels([missing, "a", "c", missing, "b"]) == ["a", "b", "c"]
