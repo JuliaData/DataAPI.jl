@@ -74,6 +74,28 @@ definition.
 function describe end
 
 """
+    levels(x)
+
+Return a vector of unique values which occur or could occur in collection `x`,
+omitting `missing` even if present. Values are returned in the preferred order
+for the collection, with the result of [`sort`](@ref) as a default.
+
+Contrary to [`unique`](@ref), this function may return values which do not
+actually occur in the data, and does not preserve their order of appearance in `x`.
+"""
+function levels(x)
+    T = Base.nonmissingtype(eltype(x))
+    levs = convert(AbstractArray{T}, filter!(!ismissing, unique(x)))
+    if hasmethod(isless, Tuple{T, T})
+        try
+            sort!(levs)
+        catch
+        end
+    end
+    levs
+end
+
+"""
     Between(first, last)
 
 Select the columns between `first` and `last` from a table.
