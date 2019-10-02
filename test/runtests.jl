@@ -27,6 +27,36 @@ end
 
 end
 
+@testset "levels" begin
+
+    @test DataAPI.levels(1:1) ==
+        DataAPI.levels([1]) ==
+        DataAPI.levels([1, missing]) ==
+        DataAPI.levels([missing, 1]) ==
+        [1]
+    @test DataAPI.levels(2:-1:1) ==
+        DataAPI.levels([2, 1]) ==
+        DataAPI.levels(Any[2, 1]) ==
+        DataAPI.levels([2, missing, 1]) ==
+        [1, 2]
+    @test DataAPI.levels([missing, "a", "c", missing, "b"]) == ["a", "b", "c"]
+    @test DataAPI.levels([Complex(0, 1), Complex(1, 0), missing]) ==
+        [Complex(0, 1), Complex(1, 0)]
+    @test typeof(DataAPI.levels([1])) ===
+        typeof(DataAPI.levels([1, missing])) ===
+        Vector{Int}
+    @test typeof(DataAPI.levels(["a"])) ===
+        typeof(DataAPI.levels(["a", missing])) ===
+        Vector{String}
+    @test typeof(DataAPI.levels(Real[1])) ===
+        typeof(DataAPI.levels(Union{Real,Missing}[1, missing])) ===
+        Vector{Real}
+    @test typeof(DataAPI.levels(trues(1))) === Vector{Bool}
+    @test isempty(DataAPI.levels([missing]))
+    @test isempty(DataAPI.levels([]))
+
+end
+
 @testset "Between" begin
 
     for x in (1, :a), y in (1, :a)
