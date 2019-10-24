@@ -1,7 +1,7 @@
 # DataAPI.jl
 
 ### Purpose
-This package provides a namespace for data-related generic function definitions to solve the optional dependency problem; packages wishing to share and/or extend functions can avoid depending directly on each other by moving the function definition to DataAPI.jl and each package taking a dependency on it. As such, it is paramount for DataAPI.jl to be as minimal as possible, defining only generic function stubs and very little else. PRs proposing external dependencies or invovled definitions will not be accepted.
+This package provides a namespace for data-related generic function definitions to solve the optional dependency problem; packages wishing to share and/or extend functions can avoid depending directly on each other by moving the function definition to DataAPI.jl and each package taking a dependency on it. As such, it is paramount for DataAPI.jl to be as minimal as possible, defining only generic function stubs and very little else. PRs proposing external dependencies or involved definitions will not be accepted.
 
 ### Adding New Functions
 When a function is proposed to be defined in DataAPI.jl, it must include clear documentation of its purpose, convention, and API, as well as specify which package will "own" any generic fallback definitions. Functions will not be exported from DataAPI.jl, but are left to extending packages to choose whether it is exported from their package or not.
