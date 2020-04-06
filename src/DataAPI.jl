@@ -103,6 +103,13 @@ struct Between{T1 <: Union{Int, Symbol}, T2 <: Union{Int, Symbol}}
     last::T2
 end
 
+struct BroadcastedBetween{T1 <: Union{Int, Symbol}, T2 <: Union{Int, Symbol}}
+    first::T1
+    last::T2
+end
+
+Base.Broadcast.broadcastable(x::Between) = Ref(BroadcastedBetween(x.first, x.last))
+
 """
     All(cols...)
 
@@ -112,5 +119,12 @@ struct All{T<:Tuple}
     cols::T
     All(args...) = new{typeof(args)}(args)
 end
+
+struct BroadcastedAll{T<:Tuple}
+    cols::T
+    BroadcastedAll(args...) = new{typeof(args)}(args)
+end
+
+Base.Broadcast.broadcastable(x::All) = Ref(BroadcastedAll(x.cols...))
 
 end # module

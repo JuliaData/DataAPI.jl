@@ -63,6 +63,9 @@ end
         b = DataAPI.Between(x, y)
         @test b.first == x
         @test b.last == y
+
+        @test (b .=> sum) === (DataAPI.BroadcastedBetween(x, y) => sum)
+        @test (b .=> [sum, float]) == (Ref(DataAPI.BroadcastedBetween(x, y)) .=> [sum, float])
     end
 
     @test_throws MethodError DataAPI.Between(true, 1)
@@ -80,6 +83,11 @@ end
     @test length(a.cols) == 1
     @test a.cols[1] isa DataAPI.All
     @test a.cols[1].cols == ()
+
+    @test (DataAPI.All() .=> sum) === (DataAPI.BroadcastedAll() => sum)
+    @test (DataAPI.All(:a) .=> sum) === (DataAPI.BroadcastedAll(:a) => sum)
+    @test (DataAPI.All((1,2,3), :b) .=> sum) === (DataAPI.BroadcastedAll((1,2,3), :b) => sum)
+    @test (DataAPI.All() .=> [sum, float]) == (Ref(DataAPI.BroadcastedAll()) .=> [sum, float])
 
 end
 
