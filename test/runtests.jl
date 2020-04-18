@@ -61,8 +61,8 @@ end
 
     for x in (1, :a, "a"), y in (1, :a, "a")
         b = DataAPI.Between(x, y)
-        @test b.first == x isa Int ? x : Symbol(x)
-        @test b.last == y isa Int ? y : Symbol(y)
+        @test b.first == (x isa Int ? x : Symbol(x))
+        @test b.last == (y isa Int ? y : Symbol(y))
     end
 
     @test_throws MethodError DataAPI.Between(true, 1)
