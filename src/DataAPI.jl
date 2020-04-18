@@ -103,6 +103,10 @@ struct Between{T1 <: Union{Int, Symbol}, T2 <: Union{Int, Symbol}}
     last::T2
 end
 
+Between(x::AbstractString, y::AbstractString) = Between(Symbol(x), Symbol(y))
+Between(x::Union{Int, Symbol}, y::AbstractString) = Between(x, Symbol(y))
+Between(x::AbstractString, y::Union{Int, Symbol}) = Between(Symbol(x), y)
+
 """
     All(cols...)
 
