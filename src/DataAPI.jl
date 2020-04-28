@@ -117,4 +117,14 @@ struct All{T<:Tuple}
     All(args...) = new{typeof(args)}(args)
 end
 
+"""
+    Cols(cols...)
+
+Select the union of the selections in `cols`. If `cols == ()`, select no columns.
+"""
+struct Cols{T<:Tuple}
+    cols::T
+    Cols(args...) = new{typeof(args)}(args)
+end
+
 end # module

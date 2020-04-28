@@ -70,16 +70,18 @@ end
 
 end
 
-@testset "All" begin
+@testset "All and Cols" begin
 
-    @test DataAPI.All().cols == ()
-    @test DataAPI.All(1).cols == (1,)
-    @test DataAPI.All([1,2,3], :a).cols == ([1, 2, 3], :a)
+    for v in (DataAPI.All, DataAPI.Cols)
+        @test v().cols == ()
+        @test v(1).cols == (1,)
+        @test v([1,2,3], :a).cols == ([1, 2, 3], :a)
 
-    a = DataAPI.All(DataAPI.All())
-    @test length(a.cols) == 1
-    @test a.cols[1] isa DataAPI.All
-    @test a.cols[1].cols == ()
+        a = v(v())
+        @test length(a.cols) == 1
+        @test a.cols[1] isa v
+        @test a.cols[1].cols == ()
+    end
 
 end
 
