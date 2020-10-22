@@ -93,7 +93,7 @@ Contrary to [`unique`](@ref), this function may return values which do not
 actually occur in the data, and does not preserve their order of appearance in `x`.
 
 If a type of `A` implements `levels` with a meaningful order then it should also
-implement `isordered` as by defualt `isordered` returns `false`.
+implement `isordered` as by default `isordered` returns `false`.
 """
 function levels(x)
     T = Base.nonmissingtype(eltype(x))
@@ -109,21 +109,21 @@ end
     isordered(A)
 
 Test whether entries in `A` can be compared using `<`, `>` and similar operators,
-using the ordering of `levels`.
+using the ordering of `levels(A)`.
 
 If a type of `A` implements `levels` with a meaningful order then it should also
 implement `isordered` as by defualt `isordered` returns `false`.
 """
 function isordered end
 
-isordered(::AbstractArray{<:Union{Missing, AbstractString}})  = true
-isordered(::AbstractArray{<:Union{Missing, Real}})  = true
-isordered(::AbstractArray{<:Union{Missing, Symbol}})  = true
-isordered(::AbstractArray{<:Union{Missing, AbstractChar}})  = true
-isordered(::AbstractArray{<:Union{Missing, Dates.Period}})  = true
-isordered(::AbstractArray{<:Union{Missing, Dates.TimeType}})  = true
-isordered(::AbstractArray{Missing})  = true
-isordered(::AbstractArray{<:Any})  = false
+isordered(::AbstractArray{<:Union{Missing, AbstractString}}) = true
+isordered(::AbstractArray{<:Union{Missing, Real}}) = true
+isordered(::AbstractArray{<:Union{Missing, Symbol}}) = true
+isordered(::AbstractArray{<:Union{Missing, AbstractChar}}) = true
+isordered(::AbstractArray{<:Union{Missing, Dates.Period}}) = true
+isordered(::AbstractArray{<:Union{Missing, Dates.TimeType}}) = true
+isordered(::AbstractArray{Missing}) = true
+isordered(::AbstractArray{<:Any}) = false
 
 """
     Between(first, last)
