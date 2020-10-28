@@ -122,9 +122,7 @@ Select the union of the selections in `cols`. If `cols == ()`, select all column
 struct All{T<:Tuple}
     cols::T
     function All(args...)
-        if isempty(args)
-            Base.depwarn("All() is deprecated, use Cols(:) instead", :All)
-        else
+        if !isempty(args)
             Base.depwarn("All(args...) is deprecated, use Cols(args...) instead", :All)
         end
         return new{typeof(args)}(args)
