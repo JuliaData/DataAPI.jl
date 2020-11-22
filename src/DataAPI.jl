@@ -70,6 +70,20 @@ function refpool end
 refpool(A::AbstractArray) = nothing
 
 """
+    droplevels!(A)
+
+For an array `A` that implements [`levels`](@ref DataAPI.levels)), certain levels may
+become "unused" via array modification, meaning the values still exist in the array
+"pool", but are no longer present in the actual array values. `droplevels!` remove
+such values to ensure `levels` only returns values that currently exist in the array.
+
+This generic function is owned by DataAPI.jl itself, which is the sole provider of the
+default definition.
+"""
+function droplevels! end
+droplevels!(A) = nothing
+
+"""
     describe(io::IO, x)
 
 For an object `x`, print descriptive statistics to `io`.

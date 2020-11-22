@@ -57,6 +57,12 @@ end
 
 end
 
+@testset "droplevels!" begin
+
+    @test DataAPI.droplevels!([1, 2, 3]) === nothing
+
+end
+
 @testset "Between" begin
 
     for x in (1, :a, "a"), y in (1, :a, "a")
