@@ -1,5 +1,10 @@
 # DataAPI.jl
 
+[![CI](https://github.com/JuliaData/DataAPI.jl/workflows/CI/badge.svg)](https://github.com/JuliaData/DataAPI.jl/actions?query=workflow%3ACI)
+[![deps](https://juliahub.com/docs/DataAPI/deps.svg)](https://juliahub.com/ui/Packages/DataAPI/3a8mN?t=2)
+[![version](https://juliahub.com/docs/DataAPI/version.svg)](https://juliahub.com/ui/Packages/DataAPI/3a8mN)
+[![pkgeval](https://juliahub.com/docs/DataAPI/pkgeval.svg)](https://juliahub.com/ui/Packages/DataAPI/3a8mN)
+
 ### Purpose
 This package provides a namespace for data-related generic function definitions to solve the optional dependency problem; packages wishing to share and/or extend functions can avoid depending directly on each other by moving the function definition to DataAPI.jl and each package taking a dependency on it. As such, it is paramount for DataAPI.jl to be as minimal as possible, defining only generic function stubs and very little else. PRs proposing external dependencies or involved definitions will not be accepted.
 
