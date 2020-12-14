@@ -84,5 +84,17 @@ end
     end
 
 end
+    
+@testset "isordered" begin
+
+    @test DataAPI.isordered([1])
+    @test DataAPI.isordered(Union{Real,Missing}[1])
+    @test DataAPI.isordered(["1"])
+    @test DataAPI.isordered(['1'])
+    @test !DataAPI.isordered(Any[1])
+    @test !DataAPI.isordered(["1", '1'])
+    @test !DataAPI.isordered(Union{Char, String}["1", '1'])
+
+end
 
 end # @testset "DataAPI"
