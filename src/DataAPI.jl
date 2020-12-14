@@ -112,7 +112,7 @@ Test whether entries in `A` can be compared using `<`, `>` and similar operators
 using the ordering of `levels(A)`.
 
 If a type of `A` implements `levels` with a meaningful order then it should also
-implement `isordered` as by defualt `isordered` returns `false`.
+implement `isordered` as by default `isordered` returns `false`.
 """
 function isordered end
 
