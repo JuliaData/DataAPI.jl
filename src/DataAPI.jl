@@ -146,7 +146,12 @@ Select the union of the selections in `cols`. If `cols == ()`, select all column
 """
 struct All{T<:Tuple}
     cols::T
-    All(args...) = new{typeof(args)}(args)
+    function All(args...)
+        if !isempty(args)
+            Base.depwarn("All(args...) is deprecated, use Cols(args...) instead", :All)
+        end
+        return new{typeof(args)}(args)
+    end
 end
 
 """

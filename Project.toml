@@ -1,7 +1,7 @@
 name = "DataAPI"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 authors = ["quinnj <quinn.jacobd@gmail.com>"]
-version = "1.4.0"
+version = "1.5.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
