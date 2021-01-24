@@ -92,7 +92,11 @@ actually occur in the data, and does not preserve their order of appearance in `
 """
 function levels(x)
     T = Base.nonmissingtype(eltype(x))
-    levs = convert(AbstractArray{T}, filter!(!ismissing, unique(x)))
+    u = unique(x)
+    # unique returns its input with copying for ranges
+    # (and possibly for other types guaranteed to hold unique values)
+    nmu = u === x ? filter(!ismissing, u) : filter!(!ismissing, u)
+    levs = convert(AbstractArray{T}, nmu)
     try
         sort!(levs)
     catch
