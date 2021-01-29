@@ -74,7 +74,7 @@ refpool(A::AbstractArray) = nothing
 
 Whenever available, return an indexable object `invpool` such that, given the *original*
 array `A` and a "value" `x`, `pool(A)[invpool(A)[x]]` is equal to `x`.
-Return `nothing` if such "ref value" is not available.
+`invpool(A)[x]` returns `nothing` if such `x` is not available.
 
 By default, `refpool(A)` returns `nothing`.
 
