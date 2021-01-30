@@ -72,13 +72,14 @@ refpool(A::AbstractArray) = nothing
 """
     invrefpool(A)
 
-Whenever available, return an indexable object `invpool` such that, given the *original*
-array `A` and a "value" `x`, `pool(A)[invpool(A)[x]]` is equal to `x`.
-`invpool(A)[x]` returns `nothing` if such `x` is not available.
+Whenever available, return an indexable object such that, given an array `A` and
+a "value" `x` taken from `A`, `refpool(A)[invrefpool(A)[x]]` is equal to `x`
+(according to `isequal`) and of the same type as `x`.
+`invrefpool(A)[x]` returns `nothing` if such `x` is not available.
 
 By default, `refpool(A)` returns `nothing`.
 
-If `invrefpool(A)` is not `nothing`, then `pool(A)` also muts not be `nothing`.
+If `invrefpool(A)` is not `nothing`, then `pool(A)` also must not be `nothing`.
 
 This generic function is owned by DataAPI.jl itself, which is the sole provider of the
 default definition.
