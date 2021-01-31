@@ -83,7 +83,7 @@ for which `refpool(A)` is not `nothing`:
 Additionally it is required that `haskey` is defined for `invrefpool(A)`,
 allowing to check if `ix` is a valid index into it.
 
-By default, `refpool(A)` returns `nothing`.
+By default, `invrefpool(A)` returns `nothing`.
 
 If `invrefpool(A)` is not `nothing`, then `refpool(A)` also must not be `nothing`.
 
