@@ -72,12 +72,16 @@ refpool(A::AbstractArray) = nothing
 """
     invrefpool(A)
 
-Whenever available, return an indexable object such that given an array `A` for which `refpool(A)` is not `nothing` such that:
+Whenever available, return an indexable object such that given an array `A`
+for which `refpool(A)` is not `nothing`:
 
-* for any valid index `x` into `refpool(A)` the following holds `invrefpool(A)[refpool(A)[x]] === x`;
-* for any valid index `ix` into `invrefpool(A)` the following holds `refpool(A)[invrefpool(A)[ix]] === ix`.
+* for any valid index `x` into `refpool(A)`, `invrefpool(A)[refpool(A)[x]]` is equal to `x`
+  (according to `isequal`) and of the same type as `x`;
+* for any valid index `ix` into `invrefpool(A)` , `refpool(A)[invrefpool(A)[ix]]` is equal to `ix`
+  (according to `isequal`) and of the same type as `ix`.
 
-Additionally it is requred that `haskey` is defined for `invrefpool(A)` allowing to check if `ix` is a valid index into it.
+Additionally it is required that `haskey` is defined for `invrefpool(A)`,
+allowing to check if `ix` is a valid index into it.
 
 By default, `refpool(A)` returns `nothing`.
 
