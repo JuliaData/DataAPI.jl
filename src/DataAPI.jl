@@ -70,6 +70,30 @@ function refpool end
 refpool(A::AbstractArray) = nothing
 
 """
+    invrefpool(A)
+
+Whenever available, return an indexable object such that given an array `A`
+for which `refpool(A)` is not `nothing`:
+
+* for any valid index `x` into `refpool(A)`, `invrefpool(A)[refpool(A)[x]]` is equal to `x`
+  (according to `isequal`) and of the same type as `x`;
+* for any valid index `ix` into `invrefpool(A)` , `refpool(A)[invrefpool(A)[ix]]` is equal to `ix`
+  (according to `isequal`) and of the same type as `ix`.
+
+Additionally it is required that `haskey` is defined for `invrefpool(A)`,
+allowing to check if `ix` is a valid index into it.
+
+By default, `invrefpool(A)` returns `nothing`.
+
+If `invrefpool(A)` is not `nothing`, then `refpool(A)` also must not be `nothing`.
+
+This generic function is owned by DataAPI.jl itself, which is the sole provider of the
+default definition.
+"""
+function invrefpool end
+invrefpool(A::AbstractArray) = nothing
+
+"""
     describe(io::IO, x)
 
 For an object `x`, print descriptive statistics to `io`.
