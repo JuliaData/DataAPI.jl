@@ -83,7 +83,7 @@ for which `refpool(A)` is not `nothing`:
 Additionally it is required that for `invrefpool(A)` the following methods are defined:
 
 * `Base.haskey`: allowing to check if `ix` is a valid index into it.
-* `Base/get`: allowing to get a value from it and return a passed default value if it is not present.
+* `Base.get`: allowing to get a value from it or a passed default value if it is not present.
 
 By default, `invrefpool(A)` returns `nothing`.
 
