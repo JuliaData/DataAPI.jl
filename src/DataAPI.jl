@@ -80,8 +80,10 @@ for which `refpool(A)` is not `nothing`:
 * for any valid index `ix` into `invrefpool(A)` , `refpool(A)[invrefpool(A)[ix]]` is equal to `ix`
   (according to `isequal`) and of the same type as `ix`.
 
-Additionally it is required that `haskey` is defined for `invrefpool(A)`,
-allowing to check if `ix` is a valid index into it.
+Additionally it is required that for `invrefpool(A)` the following methods are defined:
+
+* `Base.haskey`: allowing to check if `ix` is a valid index into it.
+* `Base/get`: allowing to get a value from it and return a passed default value if it is not present.
 
 By default, `invrefpool(A)` returns `nothing`.
 
