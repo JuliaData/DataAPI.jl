@@ -85,4 +85,9 @@ end
 
 end
 
+@testset "unwrap" begin
+    @test DataAPI.unwrap(1) === 1
+    @test DataAPI.unwrap(missing) === missing
+end
+
 end # @testset "DataAPI"
