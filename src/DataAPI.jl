@@ -183,128 +183,16 @@ default definition.
 function unwrap end
 unwrap(x) = x
 
-const _joindoc = """
-The implementation specific arguments, like the join key or equality rule,
-can be designed as the additional keyword arguments.
-"""
-
-"""
-    innerjoin(x, y)
-
-Perform a database-style inner join of two tabular objects and return a tabular
-object containing the result.
-
-$_joindoc
-
-See also: [`outerjoin`](@ref),
-          [`leftjoin`](@ref),
-          [`rightjoin`](@ref),
-          [`semijoin`](@ref),
-          [`antijoin`](@ref),
-          [`crossjoin`](@ref).
-"""
+# The database-style join methods for tabular data type.
+# The common interface is `*join(x, y; ...)` and use the keyword arguments
+# for the join criteria.
+# See the design of DataFrames.jl also.
 function innerjoin end
-
-"""
-    outerjoin(x, y)
-
-Perform a database-style outer join of two tabular objects and return a tabular
-object containing the result.
-
-$_joindoc
-
-See also: [`innerjoin`](@ref),
-          [`leftjoin`](@ref),
-          [`rightjoin`](@ref),
-          [`semijoin`](@ref),
-          [`antijoin`](@ref),
-          [`crossjoin`](@ref).
-"""
 function outerjoin end
-
-"""
-    rightjoin(x, y)
-
-Perform a database-style right join on two tabular objects and return a tabular
-object containing the result.
-
-$_joindoc
-
-See also: [`innerjoin`](@ref),
-          [`outerjoin`](@ref),
-          [`leftjoin`](@ref),
-          [`semijoin`](@ref),
-          [`antijoin`](@ref),
-          [`crossjoin`](@ref).
-"""
 function rightjoin end
-
-"""
-    leftjoin(x, y)
-
-Perform a database-style left join of two tabular objects and return a tabular
-object containing the result.
-
-$_joindoc
-
-See also: [`innerjoin`](@ref),
-          [`outerjoin`](@ref),
-          [`rightjoin`](@ref),
-          [`semijoin`](@ref),
-          [`antijoin`](@ref),
-          [`crossjoin`](@ref).
-"""
 function leftjoin end
-
-"""
-    semijoin(x, y)
-
-Perform a database-style semi join of two tabular objects and return a tabular
-object containing the result.
-
-$_joindoc
-
-See also: [`innerjoin`](@ref),
-          [`outerjoin`](@ref),
-          [`leftjoin`](@ref),
-          [`rightjoin`](@ref),
-          [`antijoin`](@ref),
-          [`crossjoin`](@ref).
-"""
 function semijoin end
-
-"""
-    antijoin(x, y)
-
-Perform a database-style anti join of two tabular objects and return a tabular
-object containing the result.
-
-$_joindoc
-
-See also: [`innerjoin`](@ref),
-          [`outerjoin`](@ref),
-          [`leftjoin`](@ref),
-          [`rightjoin`](@ref),
-          [`semijoin`](@ref),
-          [`crossjoin`](@ref).
-"""
 function antijoin end
-
-"""
-    crossjoin(x, y)
-
-Perform a database-style cross join of two tabular objects and return a tabular
-object containing the result.
-
-$_joindoc
-
-See also: [`innerjoin`](@ref),
-          [`outerjoin`](@ref),
-          [`leftjoin`](@ref),
-          [`rightjoin`](@ref),
-          [`semijoin`](@ref),
-          [`antijoin`](@ref).
-"""
 function crossjoin end
 
 end # module
