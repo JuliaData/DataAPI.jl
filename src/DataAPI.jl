@@ -183,10 +183,18 @@ default definition.
 function unwrap end
 unwrap(x) = x
 
+const _joindoc = """
+The implementation specific arguments, like the join key or equality rule,
+can be designed as the additional keyword arguments.
+"""
+
 """
     innerjoin(x, y)
 
-Perform an inner join of two or more objects.
+Perform a database-style inner join of two tabular objects and return a tabular
+object containing the result.
+
+$_joindoc
 
 See also: [`outerjoin`](@ref),
           [`leftjoin`](@ref),
@@ -200,7 +208,10 @@ function innerjoin end
 """
     outerjoin(x, y)
 
-Perform an outer join of two or more objects.
+Perform a database-style outer join of two tabular objects and return a tabular
+object containing the result.
+
+$_joindoc
 
 See also: [`innerjoin`](@ref),
           [`leftjoin`](@ref),
@@ -214,7 +225,10 @@ function outerjoin end
 """
     rightjoin(x, y)
 
-Perform a right join on two objects.
+Perform a database-style right join on two tabular objects and return a tabular
+object containing the result.
+
+$_joindoc
 
 See also: [`innerjoin`](@ref),
           [`outerjoin`](@ref),
@@ -228,7 +242,10 @@ function rightjoin end
 """
     leftjoin(x, y)
 
-Perform a left join of two objects.
+Perform a database-style left join of two tabular objects and return a tabular
+object containing the result.
+
+$_joindoc
 
 See also: [`innerjoin`](@ref),
           [`outerjoin`](@ref),
@@ -242,7 +259,10 @@ function leftjoin end
 """
     semijoin(x, y)
 
-Perform a semi join of two objects.
+Perform a database-style semi join of two tabular objects and return a tabular
+object containing the result.
+
+$_joindoc
 
 See also: [`innerjoin`](@ref),
           [`outerjoin`](@ref),
@@ -256,7 +276,10 @@ function semijoin end
 """
     antijoin(x, y)
 
-Perform an anti join of two objects.
+Perform a database-style anti join of two tabular objects and return a tabular
+object containing the result.
+
+$_joindoc
 
 See also: [`innerjoin`](@ref),
           [`outerjoin`](@ref),
@@ -270,7 +293,10 @@ function antijoin end
 """
     crossjoin(x, y)
 
-Perform a cross join of two or more objects.
+Perform a database-style cross join of two tabular objects and return a tabular
+object containing the result.
+
+$_joindoc
 
 See also: [`innerjoin`](@ref),
           [`outerjoin`](@ref),
