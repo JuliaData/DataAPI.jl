@@ -184,7 +184,7 @@ function unwrap end
 unwrap(x) = x
 
 """
-    innerjoin(x, y, zs...)
+    innerjoin(x, y)
 
 Perform an inner join of two or more objects.
 
@@ -198,7 +198,7 @@ See also: [`outerjoin`](@ref),
 function innerjoin end
 
 """
-    outerjoin(x, y, zs...)
+    outerjoin(x, y)
 
 Perform an outer join of two or more objects.
 
@@ -268,7 +268,7 @@ See also: [`innerjoin`](@ref),
 function antijoin end
 
 """
-    crossjoin(x, y, zs...)
+    crossjoin(x, y)
 
 Perform a cross join of two or more objects.
 
