@@ -183,4 +183,102 @@ default definition.
 function unwrap end
 unwrap(x) = x
 
+"""
+    innerjoin(x, y, zs...)
+
+Perform an inner join of two or more objects.
+
+See also: [`outerjoin`](@ref),
+          [`leftjoin`](@ref),
+          [`rightjoin`](@ref),
+          [`semijoin`](@ref),
+          [`antijoin`](@ref),
+          [`crossjoin`](@ref).
+"""
+function innerjoin end
+
+"""
+    outerjoin(x, y, zs...)
+
+Perform an outer join of two or more objects.
+
+See also: [`innerjoin`](@ref),
+          [`leftjoin`](@ref),
+          [`rightjoin`](@ref),
+          [`semijoin`](@ref),
+          [`antijoin`](@ref),
+          [`crossjoin`](@ref).
+"""
+function outerjoin end
+
+"""
+    rightjoin(x, y)
+
+Perform a right join on two objects.
+
+See also: [`innerjoin`](@ref),
+          [`outerjoin`](@ref),
+          [`leftjoin`](@ref),
+          [`semijoin`](@ref),
+          [`antijoin`](@ref),
+          [`crossjoin`](@ref).
+"""
+function rightjoin end
+
+"""
+    leftjoin(x, y)
+
+Perform a left join of two objects.
+
+See also: [`innerjoin`](@ref),
+          [`outerjoin`](@ref),
+          [`rightjoin`](@ref),
+          [`semijoin`](@ref),
+          [`antijoin`](@ref),
+          [`crossjoin`](@ref).
+"""
+function leftjoin end
+
+"""
+    semijoin(x, y)
+
+Perform a semi join of two objects.
+
+See also: [`innerjoin`](@ref),
+          [`outerjoin`](@ref),
+          [`leftjoin`](@ref),
+          [`rightjoin`](@ref),
+          [`antijoin`](@ref),
+          [`crossjoin`](@ref).
+"""
+function semijoin end
+
+"""
+    antijoin(x, y)
+
+Perform an anti join of two objects.
+
+See also: [`innerjoin`](@ref),
+          [`outerjoin`](@ref),
+          [`leftjoin`](@ref),
+          [`rightjoin`](@ref),
+          [`semijoin`](@ref),
+          [`crossjoin`](@ref).
+"""
+function antijoin end
+
+"""
+    crossjoin(x, y, zs...)
+
+Perform a cross join of two or more objects.
+
+See also: [`innerjoin`](@ref),
+          [`outerjoin`](@ref),
+          [`leftjoin`](@ref),
+          [`rightjoin`](@ref),
+          [`semijoin`](@ref),
+          [`antijoin`](@ref).
+"""
+function crossjoin end
+
 end # module
