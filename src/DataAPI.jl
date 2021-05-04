@@ -183,4 +183,16 @@ default definition.
 function unwrap end
 unwrap(x) = x
 
+# The database-style join methods for tabular data type.
+# The common interface is `*join(x, y; ...)` and use the keyword arguments
+# for the join criteria.
+# See the design of DataFrames.jl also.
+function innerjoin end
+function outerjoin end
+function rightjoin end
+function leftjoin end
+function semijoin end
+function antijoin end
+function crossjoin end
+
 end # module
