@@ -205,7 +205,7 @@ function nrow end
 """
     ncol(t)
 
-Return the number of rows of table `t`.
+Return the number of columns of table `t`.
 """
 function ncol end
 
