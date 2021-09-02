@@ -144,13 +144,6 @@ Between(x::AbstractString, y::AbstractString) = Between(Symbol(x), Symbol(y))
 Between(x::Union{Int, Symbol}, y::AbstractString) = Between(x, Symbol(y))
 Between(x::AbstractString, y::Union{Int, Symbol}) = Between(Symbol(x), y)
 
-struct BroadcastedBetween{T1 <: Union{Int, Symbol}, T2 <: Union{Int, Symbol}}
-    first::T1
-    last::T2
-end
-
-Base.Broadcast.broadcastable(x::Between) = Ref(BroadcastedBetween(x.first, x.last))
-
 """
     All(cols...)
 
@@ -176,12 +169,33 @@ struct Cols{T<:Tuple}
     Cols(args...) = new{typeof(args)}(args)
 end
 
-struct BroadcastedAll{T<:Tuple}
-    cols::T
-    BroadcastedAll(args...) = new{typeof(args)}(args)
+"""
+    BroadcastedSelector(selector)
+
+Wrapper type around a `Between`, `All` or `Cols` indicating that
+an operation should be applied to each column included by the wrapped selector.
+
+# Examples
+```jldoctest
+julia> using DataAPI
+
+julia> DataAPI.Between(:a, :e) .=> sin
+DataAPI.BroadcastedSelector{DataAPI.Between{Symbol, Symbol}}(DataAPI.Between{Symbol, Symbol}(:a, :e)) => sin
+
+julia> DataAPI.Cols(r"x") .=> [sum, prod]
+2-element Vector{Pair{DataAPI.BroadcastedSelector{DataAPI.Cols{Tuple{Regex}}}, _A} where _A}:
+ DataAPI.BroadcastedSelector{DataAPI.Cols{Tuple{Regex}}}(DataAPI.Cols{Tuple{Regex}}((r"x",))) => sum
+ DataAPI.BroadcastedSelector{DataAPI.Cols{Tuple{Regex}}}(DataAPI.Cols{Tuple{Regex}}((r"x",))) => prod
+```
+"""
+struct BroadcastedSelector{T}
+    sel::T
+    BroadcastedSelector(sel) = new{typeof(sel)}(sel)
 end
 
-Base.Broadcast.broadcastable(x::All) = Ref(BroadcastedAll(x.cols...))
+Base.Broadcast.broadcastable(x::Between) = Ref(BroadcastedSelector(x))
+Base.Broadcast.broadcastable(x::All) = Ref(BroadcastedSelector(x))
+Base.Broadcast.broadcastable(x::Cols) = Ref(BroadcastedSelector(x))
 
 """
     unwrap(x)
