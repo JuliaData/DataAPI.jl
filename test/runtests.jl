@@ -63,6 +63,11 @@ end
         b = DataAPI.Between(x, y)
         @test b.first == (x isa Int ? x : Symbol(x))
         @test b.last == (y isa Int ? y : Symbol(y))
+
+        @test (b .=> sum) ===
+            (DataAPI.BroadcastedSelector(DataAPI.Between(x, y)) => sum)
+        @test (b .=> [sum, float]) ==
+            (Ref(DataAPI.BroadcastedSelector(DataAPI.Between(x, y))) .=> [sum, float])
     end
 
     @test_throws MethodError DataAPI.Between(true, 1)
@@ -81,6 +86,15 @@ end
         @test length(a.cols) == 1
         @test a.cols[1] isa v
         @test a.cols[1].cols == ()
+
+        @test (v() .=> sum) ===
+            (DataAPI.BroadcastedSelector(v()) => sum)
+        @test (v(:a) .=> sum) ===
+            (DataAPI.BroadcastedSelector(v(:a)) => sum)
+        @test (v((1,2,3), :b) .=> sum) ===
+            (DataAPI.BroadcastedSelector(v((1,2,3), :b)) => sum)
+        @test (v() .=> [sum, float]) ==
+            (Ref(DataAPI.BroadcastedSelector(v())) .=> [sum, float])
     end
 
 end

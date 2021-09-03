@@ -170,6 +170,34 @@ struct Cols{T<:Tuple}
 end
 
 """
+    BroadcastedSelector(selector)
+
+Wrapper type around a `Between`, `All` or `Cols` indicating that
+an operation should be applied to each column included by the wrapped selector.
+
+# Examples
+```jldoctest
+julia> using DataAPI
+
+julia> DataAPI.Between(:a, :e) .=> sin
+DataAPI.BroadcastedSelector{DataAPI.Between{Symbol, Symbol}}(DataAPI.Between{Symbol, Symbol}(:a, :e)) => sin
+
+julia> DataAPI.Cols(r"x") .=> [sum, prod]
+2-element Vector{Pair{DataAPI.BroadcastedSelector{DataAPI.Cols{Tuple{Regex}}}, _A} where _A}:
+ DataAPI.BroadcastedSelector{DataAPI.Cols{Tuple{Regex}}}(DataAPI.Cols{Tuple{Regex}}((r"x",))) => sum
+ DataAPI.BroadcastedSelector{DataAPI.Cols{Tuple{Regex}}}(DataAPI.Cols{Tuple{Regex}}((r"x",))) => prod
+```
+"""
+struct BroadcastedSelector{T}
+    sel::T
+    BroadcastedSelector(sel) = new{typeof(sel)}(sel)
+end
+
+Base.Broadcast.broadcastable(x::Between) = Ref(BroadcastedSelector(x))
+Base.Broadcast.broadcastable(x::All) = Ref(BroadcastedSelector(x))
+Base.Broadcast.broadcastable(x::Cols) = Ref(BroadcastedSelector(x))
+
+"""
     unwrap(x)
 
 For a given scalar argument `x`, potentially "unwrap" it to return the base wrapped value.
