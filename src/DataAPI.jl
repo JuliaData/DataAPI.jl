@@ -223,4 +223,18 @@ function semijoin end
 function antijoin end
 function crossjoin end
 
+"""
+    nrow(t)
+
+Return the number of rows of table `t`.
+"""
+function nrow end
+
+"""
+    ncol(t)
+
+Return the number of columns of table `t`.
+"""
+function ncol end
+
 end # module
