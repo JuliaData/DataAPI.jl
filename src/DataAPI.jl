@@ -161,8 +161,12 @@ end
 
 """
     Cols(cols...)
+    Cols(f::Function)
 
 Select the union of the selections in `cols`. If `cols == ()`, select no columns.
+
+If the only positional argument is a `Function` `f` then select the columns whose
+names passed to the `f` predicate as strings return `true`.
 """
 struct Cols{T<:Tuple}
     cols::T
