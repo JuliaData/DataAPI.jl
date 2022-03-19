@@ -106,25 +106,47 @@ definition.
 function describe end
 
 """
-    levels(x)
+    levels(x; skipmissing=true)
 
-Return a vector of unique values which occur or could occur in collection `x`,
-omitting `missing` even if present. Values are returned in the preferred order
-for the collection, with the result of [`sort`](@ref) as a default.
+Return a vector of unique values which occur or could occur in collection `x`.
+`missing` values are skipped unless `skipmissing=false` is passed.
+
+Values are returned in the preferred order for the collection,
+with the result of [`sort`](@ref) as a default.
 If the collection is not sortable then the order of levels is unspecified.
 
 Contrary to [`unique`](@ref), this function may return values which do not
 actually occur in the data, and does not preserve their order of appearance in `x`.
 """
-function levels(x)
+@inline levels(x; skipmissing::Bool=true) =
+    skipmissing ? _levels_skipmissing(x) : _levels_missing(x)
+
+function _levels_skipmissing(x)
     T = Base.nonmissingtype(eltype(x))
     u = unique(x)
     # unique returns its input with copying for ranges
     # (and possibly for other types guaranteed to hold unique values)
-    nmu = (u === x || Base.mightalias(u, x)) ? filter(!ismissing, u) : filter!(!ismissing, u)
+    nmu = (u isa AbstractRange || u === x || Base.mightalias(u, x)) ?
+        filter(!ismissing, u) : filter!(!ismissing, u)
     levs = convert(AbstractArray{T}, nmu)
     try
         sort!(levs)
+    catch
+    end
+    levs
+end
+
+function _levels_missing(x)
+    levs = convert(AbstractArray{eltype(x)}, unique(x))
+    # unique returns its input with copying for ranges
+    # (and possibly for other types guaranteed to hold unique values)
+    docopy = x isa AbstractRange || levs === x || Base.mightalias(levs, x)
+    try
+        if docopy
+            levs = sort(levs)
+        else
+            sort!(levs)
+        end
     catch
     end
     levs
