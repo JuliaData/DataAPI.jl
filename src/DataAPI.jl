@@ -121,35 +121,47 @@ actually occur in the data, and does not preserve their order of appearance in `
 @inline levels(x; skipmissing::Bool=true) =
     skipmissing ? _levels_skipmissing(x) : _levels_missing(x)
 
+# The `which` check is here for backward compatibility:
+# if a type implements a custom `levels` method but does not support
+# keyword arguments, `levels(x, skipmissing=true/false)` will dispatch
+# to the fallback methods here, and we take care of calling that custom method
 function _levels_skipmissing(x)
-    T = Base.nonmissingtype(eltype(x))
-    u = unique(x)
-    # unique returns its input with copying for ranges
-    # (and possibly for other types guaranteed to hold unique values)
-    nmu = (u isa AbstractRange || u === x || Base.mightalias(u, x)) ?
-        filter(!ismissing, u) : filter!(!ismissing, u)
-    levs = convert(AbstractArray{T}, nmu)
-    try
-        sort!(levs)
-    catch
+    if which(DataAPI.levels, Tuple{typeof(x)}) === which(DataAPI.levels, Tuple{Any})
+        T = Base.nonmissingtype(eltype(x))
+        u = unique(x)
+        # unique returns its input with copying for ranges
+        # (and possibly for other types guaranteed to hold unique values)
+        nmu = (u isa AbstractRange || u === x || Base.mightalias(u, x)) ?
+            filter(!ismissing, u) : filter!(!ismissing, u)
+        levs = convert(AbstractArray{T}, nmu)
+        try
+            sort!(levs)
+        catch
+        end
+        return levs
+    else
+        return levels(x)
     end
-    levs
 end
 
 function _levels_missing(x)
-    levs = convert(AbstractArray{eltype(x)}, unique(x))
-    # unique returns its input with copying for ranges
-    # (and possibly for other types guaranteed to hold unique values)
-    docopy = x isa AbstractRange || levs === x || Base.mightalias(levs, x)
-    try
-        if docopy
-            levs = sort(levs)
-        else
+    if which(DataAPI.levels, Tuple{typeof(x)}) === which(DataAPI.levels, Tuple{Any})
+        u = convert(AbstractArray{eltype(x)}, unique(x))
+        # unique returns its input with copying for ranges
+        # (and possibly for other types guaranteed to hold unique values)
+        levs = (x isa AbstractRange || u === x || Base.mightalias(u, x)) ?
+            Base.copymutable(u) : u
+        try
             sort!(levs)
+        catch
         end
-    catch
+        return levs
+    # This is a suboptimal fallback since it does a second pass over the data
+    elseif any(ismissing, x)
+        return [levels(x); missing]
+    else
+        return convert(AbstractArray{eltype(x)}, levels(x))
     end
-    levs
 end
 
 """
