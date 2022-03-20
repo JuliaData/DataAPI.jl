@@ -61,9 +61,15 @@ end
     @test @inferred(levels_skipmissing(1:1)) ≅
         @inferred(levels_skipmissing([1])) ≅
         [1]
-    @test @inferred(levels_skipmissing([1, missing])) ≅
-        @inferred(levels_skipmissing([missing, 1])) ≅
-        [1, missing]
+    if VERSION >= v"1.6.0"
+        @test @inferred(levels_skipmissing([1, missing])) ≅
+            @inferred(levels_skipmissing([missing, 1])) ≅
+            [1, missing]
+    else
+        @test levels_skipmissing([1, missing]) ≅
+            levels_skipmissing([missing, 1]) ≅
+            [1, missing]
+    end
     @test @inferred(levels_skipmissing(2:-1:1)) ≅
         @inferred(levels_skipmissing([2, 1])) ≅
         [1, 2]
