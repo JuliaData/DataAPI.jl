@@ -2,6 +2,13 @@ using Test, DataAPI
 
 const ≅ = isequal
 
+# For `levels` tests
+struct TestArray <: AbstractVector{Union{Int, Missing}}
+end
+Base.size(x::TestArray) = (2,)
+Base.getindex(x::TestArray, i) = (checkbounds(x, i); i == 1 ? missing : i-1)
+DataAPI.levels(::TestArray) = [2, 1]
+
 @testset "DataAPI" begin
 
 @testset "defaultarray" begin
@@ -28,12 +35,6 @@ end
     @test DataAPI.refvalue(A, R[1]) === R[1]
 
 end
-
-struct TestArray <: AbstractVector{Union{Int, Missing}}
-end
-Base.size(x::TestArray) = (2,)
-Base.getindex(x::TestArray, i) = (checkbounds(x, i); i == 1 ? missing : i-1)
-DataAPI.levels(::TestArray) = [2, 1]
 
 @testset "levels" begin
 
@@ -104,6 +105,9 @@ DataAPI.levels(::TestArray) = [2, 1]
     @test isempty(DataAPI.levels([], skipmissing=false))
     @test typeof(DataAPI.levels(Int[], skipmissing=false)) === Vector{Int}
 
+    # Backward compatibility test:
+    # check that an array type which implements a `levels` method
+    # which does not accept keyword arguments works thanks to fallbacks
     @test DataAPI.levels(TestArray()) ==
         DataAPI.levels(TestArray(), skipmissing=true) == [2, 1]
     @test DataAPI.levels(TestArray(), skipmissing=false) ≅ [2, 1, missing]
