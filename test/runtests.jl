@@ -29,6 +29,12 @@ end
 
 end
 
+struct TestArray <: AbstractVector{Union{Int, Missing}}
+end
+Base.size(x::TestArray) = (2,)
+Base.getindex(x::TestArray, i) = (checkbounds(x, i); i == 1 ? missing : i-1)
+DataAPI.levels(::TestArray) = [2, 1]
+
 @testset "levels" begin
 
     @test @inferred(DataAPI.levels(1:1)) ==
@@ -57,23 +63,23 @@ end
     @test isempty(DataAPI.levels([missing]))
     @test isempty(DataAPI.levels([]))
 
-    levels_skipmissing(x) = DataAPI.levels(x, skipmissing=false)
-    @test @inferred(levels_skipmissing(1:1)) ≅
-        @inferred(levels_skipmissing([1])) ≅
+    levels_missing(x) = DataAPI.levels(x, skipmissing=false)
+    @test @inferred(levels_missing(1:1)) ≅
+        @inferred(levels_missing([1])) ≅
         [1]
     if VERSION >= v"1.6.0"
-        @test @inferred(levels_skipmissing([1, missing])) ≅
-            @inferred(levels_skipmissing([missing, 1])) ≅
+        @test @inferred(levels_missing([1, missing])) ≅
+            @inferred(levels_missing([missing, 1])) ≅
             [1, missing]
     else
-        @test levels_skipmissing([1, missing]) ≅
-            levels_skipmissing([missing, 1]) ≅
+        @test levels_missing([1, missing]) ≅
+            levels_missing([missing, 1]) ≅
             [1, missing]
     end
-    @test @inferred(levels_skipmissing(2:-1:1)) ≅
-        @inferred(levels_skipmissing([2, 1])) ≅
+    @test @inferred(levels_missing(2:-1:1)) ≅
+        @inferred(levels_missing([2, 1])) ≅
         [1, 2]
-    @test @inferred(levels_skipmissing(Any[2, 1])) ≅
+    @test @inferred(levels_missing(Any[2, 1])) ≅
         [1, 2]
     @test DataAPI.levels([2, missing, 1], skipmissing=false) ≅
         [1, 2, missing]
@@ -97,6 +103,10 @@ end
         Vector{Union{Int,Missing}}
     @test isempty(DataAPI.levels([], skipmissing=false))
     @test typeof(DataAPI.levels(Int[], skipmissing=false)) === Vector{Int}
+
+    @test DataAPI.levels(TestArray()) ==
+        DataAPI.levels(TestArray(), skipmissing=true) == [2, 1]
+    @test DataAPI.levels(TestArray(), skipmissing=false) ≅ [2, 1, missing]
 end
 
 @testset "Between" begin

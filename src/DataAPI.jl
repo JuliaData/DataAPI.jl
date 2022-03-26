@@ -105,6 +105,9 @@ definition.
 """
 function describe end
 
+# Sentinel type needed to make `levels` inferrable
+struct _Default end
+
 """
     levels(x; skipmissing=true)
 
@@ -118,8 +121,9 @@ If the collection is not sortable then the order of levels is unspecified.
 Contrary to [`unique`](@ref), this function may return values which do not
 actually occur in the data, and does not preserve their order of appearance in `x`.
 """
-@inline levels(x; skipmissing::Bool=true) =
-    skipmissing ? _levels_skipmissing(x) : _levels_missing(x)
+@inline levels(x; skipmissing::Union{Bool, _Default}=_Default()) =
+    skipmissing isa _Default || skipmissing ?
+        _levels_skipmissing(x) : _levels_missing(x)
 
 # The `which` check is here for backward compatibility:
 # if a type implements a custom `levels` method but does not support
