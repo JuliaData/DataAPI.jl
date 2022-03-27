@@ -3,11 +3,12 @@ using Test, DataAPI
 const ≅ = isequal
 
 # For `levels` tests
-struct TestArray <: AbstractVector{Union{Int, Missing}}
+struct TestArray{T} <: AbstractVector{T}
+    x::Vector{T}
 end
-Base.size(x::TestArray) = (2,)
-Base.getindex(x::TestArray, i) = (checkbounds(x, i); i == 1 ? missing : i-1)
-DataAPI.levels(::TestArray) = [2, 1]
+Base.size(x::TestArray) = size(x.x)
+Base.getindex(x::TestArray, i) = x.x[i]
+DataAPI.levels(x::TestArray) = reverse(DataAPI.levels(x.x))
 
 @testset "DataAPI" begin
 
@@ -108,9 +109,21 @@ end
     # Backward compatibility test:
     # check that an array type which implements a `levels` method
     # which does not accept keyword arguments works thanks to fallbacks
-    @test DataAPI.levels(TestArray()) ==
-        DataAPI.levels(TestArray(), skipmissing=true) == [2, 1]
-    @test DataAPI.levels(TestArray(), skipmissing=false) ≅ [2, 1, missing]
+    @test DataAPI.levels(TestArray([1, 2])) ==
+        DataAPI.levels(TestArray([1, 2]), skipmissing=true) ==
+        DataAPI.levels(TestArray([1, 2]), skipmissing=false) == [2, 1]
+    @test DataAPI.levels(TestArray([1, 2])) isa Vector{Int}
+    @test DataAPI.levels(TestArray([1, 2]), skipmissing=true) isa Vector{Int}
+    @test DataAPI.levels(TestArray([1, 2]), skipmissing=false) isa Vector{Int}
+    @test DataAPI.levels(TestArray([missing, 1, 2])) ==
+        DataAPI.levels(TestArray([missing, 1, 2]), skipmissing=true) == [2, 1]
+    @test DataAPI.levels(TestArray([missing, 1, 2]), skipmissing=false) ≅
+        [2, 1, missing]
+    @test DataAPI.levels(TestArray([missing, 1, 2])) isa Vector{Int}
+    @test DataAPI.levels(TestArray([missing, 1, 2]), skipmissing=true) isa
+        Vector{Int}
+    @test DataAPI.levels(TestArray([missing, 1, 2]), skipmissing=false) isa
+        Vector{Union{Int, Missing}}
 end
 
 @testset "Between" begin
