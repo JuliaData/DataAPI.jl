@@ -1,5 +1,15 @@
 using Test, DataAPI
 
+const ≅ = isequal
+
+# For `levels` tests
+struct TestArray{T} <: AbstractVector{T}
+    x::Vector{T}
+end
+Base.size(x::TestArray) = size(x.x)
+Base.getindex(x::TestArray, i) = x.x[i]
+DataAPI.levels(x::TestArray) = reverse(DataAPI.levels(x.x))
+
 @testset "DataAPI" begin
 
 @testset "defaultarray" begin
@@ -29,15 +39,15 @@ end
 
 @testset "levels" begin
 
-    @test DataAPI.levels(1:1) ==
-        DataAPI.levels([1]) ==
-        DataAPI.levels([1, missing]) ==
-        DataAPI.levels([missing, 1]) ==
+    @test @inferred(DataAPI.levels(1:1)) ==
+        @inferred(DataAPI.levels([1])) ==
+        @inferred(DataAPI.levels([1, missing])) ==
+        @inferred(DataAPI.levels([missing, 1])) ==
         [1]
-    @test DataAPI.levels(2:-1:1) ==
-        DataAPI.levels([2, 1]) ==
-        DataAPI.levels(Any[2, 1]) ==
-        DataAPI.levels([2, missing, 1]) ==
+    @test @inferred(DataAPI.levels(2:-1:1)) ==
+        @inferred(DataAPI.levels([2, 1])) ==
+        @inferred(DataAPI.levels(Any[2, 1])) ==
+        @inferred(DataAPI.levels([2, missing, 1])) ==
         [1, 2]
     @test DataAPI.levels([missing, "a", "c", missing, "b"]) == ["a", "b", "c"]
     @test DataAPI.levels([Complex(0, 1), Complex(1, 0), missing]) ==
@@ -55,6 +65,65 @@ end
     @test isempty(DataAPI.levels([missing]))
     @test isempty(DataAPI.levels([]))
 
+    levels_missing(x) = DataAPI.levels(x, skipmissing=false)
+    @test @inferred(levels_missing(1:1)) ≅
+        @inferred(levels_missing([1])) ≅
+        [1]
+    if VERSION >= v"1.6.0"
+        @test @inferred(levels_missing([1, missing])) ≅
+            @inferred(levels_missing([missing, 1])) ≅
+            [1, missing]
+    else
+        @test levels_missing([1, missing]) ≅
+            levels_missing([missing, 1]) ≅
+            [1, missing]
+    end
+    @test @inferred(levels_missing(2:-1:1)) ≅
+        @inferred(levels_missing([2, 1])) ≅
+        [1, 2]
+    @test @inferred(levels_missing(Any[2, 1])) ≅
+        [1, 2]
+    @test DataAPI.levels([2, missing, 1], skipmissing=false) ≅
+        [1, 2, missing]
+    @test DataAPI.levels([missing, "a", "c", missing, "b"], skipmissing=false) ≅
+        ["a", "b", "c", missing]
+    @test DataAPI.levels([Complex(0, 1), Complex(1, 0), missing], skipmissing=false) ≅
+        [Complex(0, 1), Complex(1, 0), missing]
+    @test typeof(DataAPI.levels([1], skipmissing=false)) === Vector{Int}
+    @test typeof(DataAPI.levels([1, missing], skipmissing=false)) ===
+        Vector{Union{Int, Missing}}
+    @test typeof(DataAPI.levels(["a"], skipmissing=false)) === Vector{String}
+    @test typeof(DataAPI.levels(["a", missing], skipmissing=false)) ===
+        Vector{Union{String, Missing}}
+    @test typeof(DataAPI.levels(Real[1], skipmissing=false)) === Vector{Real}
+    @test typeof(DataAPI.levels(Union{Real,Missing}[1, missing], skipmissing=false)) ===
+        Vector{Union{Real, Missing}}
+    @test typeof(DataAPI.levels(trues(1), skipmissing=false)) === Vector{Bool}
+    @test DataAPI.levels([missing], skipmissing=false) ≅ [missing]
+    @test DataAPI.levels([missing], skipmissing=false) isa Vector{Missing}
+    @test typeof(DataAPI.levels(Union{Int,Missing}[missing], skipmissing=false)) ===
+        Vector{Union{Int,Missing}}
+    @test isempty(DataAPI.levels([], skipmissing=false))
+    @test typeof(DataAPI.levels(Int[], skipmissing=false)) === Vector{Int}
+
+    # Backward compatibility test:
+    # check that an array type which implements a `levels` method
+    # which does not accept keyword arguments works thanks to fallbacks
+    @test DataAPI.levels(TestArray([1, 2])) ==
+        DataAPI.levels(TestArray([1, 2]), skipmissing=true) ==
+        DataAPI.levels(TestArray([1, 2]), skipmissing=false) == [2, 1]
+    @test DataAPI.levels(TestArray([1, 2])) isa Vector{Int}
+    @test DataAPI.levels(TestArray([1, 2]), skipmissing=true) isa Vector{Int}
+    @test DataAPI.levels(TestArray([1, 2]), skipmissing=false) isa Vector{Int}
+    @test DataAPI.levels(TestArray([missing, 1, 2])) ==
+        DataAPI.levels(TestArray([missing, 1, 2]), skipmissing=true) == [2, 1]
+    @test DataAPI.levels(TestArray([missing, 1, 2]), skipmissing=false) ≅
+        [2, 1, missing]
+    @test DataAPI.levels(TestArray([missing, 1, 2])) isa Vector{Int}
+    @test DataAPI.levels(TestArray([missing, 1, 2]), skipmissing=true) isa
+        Vector{Int}
+    @test DataAPI.levels(TestArray([missing, 1, 2]), skipmissing=false) isa
+        Vector{Union{Int, Missing}}
 end
 
 @testset "Between" begin

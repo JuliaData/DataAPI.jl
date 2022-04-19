@@ -105,29 +105,67 @@ definition.
 """
 function describe end
 
-"""
-    levels(x)
+# Sentinel type needed to make `levels` inferrable
+struct _Default end
 
-Return a vector of unique values which occur or could occur in collection `x`,
-omitting `missing` even if present. Values are returned in the preferred order
-for the collection, with the result of [`sort`](@ref) as a default.
+"""
+    levels(x; skipmissing=true)
+
+Return a vector of unique values which occur or could occur in collection `x`.
+`missing` values are skipped unless `skipmissing=false` is passed.
+
+Values are returned in the preferred order for the collection,
+with the result of [`sort`](@ref) as a default.
 If the collection is not sortable then the order of levels is unspecified.
 
 Contrary to [`unique`](@ref), this function may return values which do not
 actually occur in the data, and does not preserve their order of appearance in `x`.
 """
-function levels(x)
-    T = Base.nonmissingtype(eltype(x))
-    u = unique(x)
-    # unique returns its input with copying for ranges
-    # (and possibly for other types guaranteed to hold unique values)
-    nmu = (u === x || Base.mightalias(u, x)) ? filter(!ismissing, u) : filter!(!ismissing, u)
-    levs = convert(AbstractArray{T}, nmu)
-    try
-        sort!(levs)
-    catch
+@inline levels(x; skipmissing::Union{Bool, _Default}=_Default()) =
+    skipmissing isa _Default || skipmissing ?
+        _levels_skipmissing(x) : _levels_missing(x)
+
+# The `which` check is here for backward compatibility:
+# if a type implements a custom `levels` method but does not support
+# keyword arguments, `levels(x, skipmissing=true/false)` will dispatch
+# to the fallback methods here, and we take care of calling that custom method
+function _levels_skipmissing(x)
+    if which(DataAPI.levels, Tuple{typeof(x)}) === which(DataAPI.levels, Tuple{Any})
+        T = Base.nonmissingtype(eltype(x))
+        u = unique(x)
+        # unique returns its input with copying for ranges
+        # (and possibly for other types guaranteed to hold unique values)
+        nmu = (u isa AbstractRange || u === x || Base.mightalias(u, x)) ?
+            filter(!ismissing, u) : filter!(!ismissing, u)
+        levs = convert(AbstractArray{T}, nmu)
+        try
+            sort!(levs)
+        catch
+        end
+        return levs
+    else
+        return levels(x)
     end
-    levs
+end
+
+function _levels_missing(x)
+    if which(DataAPI.levels, Tuple{typeof(x)}) === which(DataAPI.levels, Tuple{Any})
+        u = convert(AbstractArray{eltype(x)}, unique(x))
+        # unique returns its input with copying for ranges
+        # (and possibly for other types guaranteed to hold unique values)
+        levs = (x isa AbstractRange || u === x || Base.mightalias(u, x)) ?
+            Base.copymutable(u) : u
+        try
+            sort!(levs)
+        catch
+        end
+        return levs
+    # This is a suboptimal fallback since it does a second pass over the data
+    elseif any(ismissing, x)
+        return [levels(x); missing]
+    else
+        return convert(AbstractArray{eltype(x)}, levels(x))
+    end
 end
 
 """
