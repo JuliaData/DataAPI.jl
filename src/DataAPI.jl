@@ -279,4 +279,12 @@ Return the number of columns of table `t`.
 """
 function ncol end
 
+"""
+    allcombinations(sink, ...)
+
+Create table from all combinations of values in passed arguments
+using a `sink` function to materialize the table.
+"""
+function allcombinations end
+
 end # module
