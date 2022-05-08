@@ -287,4 +287,11 @@ using a `sink` function to materialize the table.
 """
 function allcombinations end
 
+"""
+    getmetadata(x, ...)
+
+Return metadata associated with object `x` or `nothing` if it doest not support metadata.
+"""
+getmetadata(::Any) = nothing
+
 end # module
