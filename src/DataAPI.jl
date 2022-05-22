@@ -292,6 +292,8 @@ function allcombinations end
 
 Return metadata associated with object `x` as an `AbstractDict{String}` object
 (or an object implementing the same interface), or `nothing` if `x` does not support metadata.
+
+Note that some systems, like Arrow.jl, might assume that metadata values are also `String`.
 """
 metadata(::Any) = nothing
 
