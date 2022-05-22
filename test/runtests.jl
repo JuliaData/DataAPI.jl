@@ -175,7 +175,7 @@ end
 end
 
 @testset "metadata" begin
-    @test isnothing(DataAPI.metadata(1))
+    @test DataAPI.metadata(1) === nothing
     @test DataAPI.metadata(TestArray([1, 2])) == Dict("length" => 2)
 end
 
