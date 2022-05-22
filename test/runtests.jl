@@ -9,6 +9,7 @@ end
 Base.size(x::TestArray) = size(x.x)
 Base.getindex(x::TestArray, i) = x.x[i]
 DataAPI.levels(x::TestArray) = reverse(DataAPI.levels(x.x))
+DataAPI.metadata(x::TestArray) = Dict("length" => length(x))
 
 @testset "DataAPI" begin
 
@@ -171,6 +172,11 @@ end
 @testset "unwrap" begin
     @test DataAPI.unwrap(1) === 1
     @test DataAPI.unwrap(missing) === missing
+end
+
+@testset "metadata" begin
+    @test isnothing(DataAPI.metadata(1))
+    @test DataAPI.metadata(TestArray([1, 2])) === Dict("length => 2)
 end
 
 end # @testset "DataAPI"
