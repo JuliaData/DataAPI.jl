@@ -288,10 +288,11 @@ using a `sink` function to materialize the table.
 function allcombinations end
 
 """
-    getmetadata(x, ...)
+    metadata(x)
 
-Return metadata associated with object `x` or `nothing` if it doest not support metadata.
+Return metadata associated with object `x` as an `AbstractDict{String}` object
+(or an object implementing the same interface), or `nothing` if `x` does not support metadata.
 """
-getmetadata(::Any) = nothing
+metadata(::Any) = nothing
 
 end # module
