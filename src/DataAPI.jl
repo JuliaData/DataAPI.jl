@@ -311,8 +311,8 @@ metadata(::T, ::Any) where {T} =
 Return `true` if `x` has non-empty metadata, and return `false` if metadata is empty.
 Return `nothing` if `x` does not support metadata.
 
-If the optional `key` argument is passed, return information about whether
-metadata is associated with the indicated key (this feature can be used, for example,
+If the optional `key` argument is passed, return information if metadata
+is associated with `key` (this feature can be used, for example,
 to query about metadata attached to a given column in a Tables.jl table).
 """
 hasmetadata(::Any) = nothing
