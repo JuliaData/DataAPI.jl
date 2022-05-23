@@ -180,6 +180,8 @@ end
 @testset "metadata" begin
     @test_throws ArgumentError DataAPI.metadata(1)
     @test DataAPI.hasmetadata(1) === nothing
+    @test_throws ArgumentError DataAPI.metadata(1, 1)
+    @test DataAPI.hasmetadata(1, 1) === nothing
     @test DataAPI.metadata(TestArray([1, 2])) == Dict("length" => 2)
     @test DataAPI.hasmetadata(TestArray([1, 2]))
     @test DataAPI.metadata(TestArray([1, 2]), "col") == Dict("name" => "col")
