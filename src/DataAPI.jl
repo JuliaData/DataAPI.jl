@@ -314,8 +314,6 @@ Return `nothing` if `x` does not support metadata.
 If the optional `key` argument is passed, return information about whether
 metadata is associated with the indicated key (this feature can be used, for example,
 to query about metadata attached to a given column in a Tables.jl table).
-
-Note that some systems, like Arrow.jl, might assume that metadata values are also `String`.
 """
 hasmetadata(::Any) = nothing
 hasmetadata(::Any, ::Any) = nothing
