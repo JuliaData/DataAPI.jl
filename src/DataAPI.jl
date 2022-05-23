@@ -288,13 +288,33 @@ using a `sink` function to materialize the table.
 function allcombinations end
 
 """
-    metadata(x)
+    metadata(x, [column])
 
 Return metadata associated with object `x` as an `AbstractDict{String}` object
-(or an object implementing the same interface), or `nothing` if `x` does not support metadata.
+(or an object implementing the same interface).
+
+Optionally for Tables.jl tables a `columns` argument can be passed, in which case
+return metadata associated with the indicated column.
 
 Note that some systems, like Arrow.jl, might assume that metadata values are also `String`.
 """
-metadata(::Any) = nothing
+metadata(::T) where {T} = throw(ArgumentError("Metadata is currently not " *
+                                              "supported for values of type $T"))
+metadata(::T, ::Any) where {T} = throw(ArgumentError("Column metadata is currently not " *
+                                                     "supported for values of type $T"))
+
+"""
+    hasmetadata(x, [column])
+
+Return `true` if `x` has non-empty metadata, and return `false` if metadata is empty.
+Return `nothing` if `x` does not support metadata.
+
+Optionally for Tables.jl tables a `columns` argument can be passed, in which case
+return the same information about metadata associated with the indicated column.
+
+Note that some systems, like Arrow.jl, might assume that metadata values are also `String`.
+"""
+hasmetadata(::Any) = nothing
+hasmetadata(::Any, ::Any) = nothing
 
 end # module
