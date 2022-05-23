@@ -288,29 +288,32 @@ using a `sink` function to materialize the table.
 function allcombinations end
 
 """
-    metadata(x, [column])
+    metadata(x, [key])
 
 Return metadata associated with object `x` as an `AbstractDict{String}` object
 (or an object implementing the same interface).
 
-Optionally for Tables.jl tables a `columns` argument can be passed, in which case
-return metadata associated with the indicated column.
+Optionally `key` argument can be passed, in which case return metadata
+associated with the indicated key (this feature can be used, for example,
+by Tables.jl table to return metadata attached to columns of a table).
 
-Note that some systems, like Arrow.jl, might assume that metadata values are also `String`.
+Note that some systems, like Arrow.jl, might assume that metadata values are
+also `String`.
 """
 metadata(::T) where {T} = throw(ArgumentError("Metadata is currently not " *
                                               "supported for values of type $T"))
-metadata(::T, ::Any) where {T} = throw(ArgumentError("Column metadata is currently not " *
+metadata(::T, ::Any) where {T} = throw(ArgumentError("Key metadata is currently not " *
                                                      "supported for values of type $T"))
 
 """
-    hasmetadata(x, [column])
+    hasmetadata(x, [key])
 
 Return `true` if `x` has non-empty metadata, and return `false` if metadata is empty.
 Return `nothing` if `x` does not support metadata.
 
-Optionally for Tables.jl tables a `columns` argument can be passed, in which case
-return the same information about metadata associated with the indicated column.
+Optionally `key` argument can be passed, in which case return information if
+metadata is associated with the indicated key (this feature can be used, for example,
+by Tables.jl table to query about metadata attached to columns of a table).
 
 Note that some systems, like Arrow.jl, might assume that metadata values are also `String`.
 """
