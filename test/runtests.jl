@@ -17,7 +17,7 @@ DataAPI.colmetadata(x::TestArray) = Dict("x" => DataAPI.colmetadata(x, "x"))
 
 DataAPI.hasmetadata(x::TestArray) = true
 DataAPI.hascolmetadata(x::TestArray) = true
-DataAPI.hascolmetadata(x::TestArray, col) = col === "x"
+DataAPI.hascolmetadata(x::TestArray, col) = col === "x" ? true : nothing
 
 @testset "DataAPI" begin
 
@@ -183,23 +183,22 @@ end
 end
 
 @testset "metadata" begin
-    @test_throws ArgumentError DataAPI.metadata(1)
     @test DataAPI.hasmetadata(1) === nothing
-    @test_throws ArgumentError DataAPI.metadata(1, 1)
+    @test_throws ArgumentError DataAPI.metadata(1)
     @test DataAPI.hascolmetadata(1, 1) === nothing
     @test_throws ArgumentError DataAPI.colmetadata(1, 1)
     @test DataAPI.hascolmetadata(1) === nothing
     @test_throws ArgumentError DataAPI.colmetadata(1)
 
 
-    @test DataAPI.metadata(TestArray([1, 2])) == Dict("length" => 2)
     @test DataAPI.hasmetadata(TestArray([1, 2]))
-    @test DataAPI.colmetadata(TestArray([1, 2]), "x") == Dict("name" => "col")
-    @test DataAPI.hascolmetadata(TestArray([1, 2]), "x") == true
+    @test DataAPI.metadata(TestArray([1, 2])) == Dict("length" => 2)
+    @test DataAPI.hascolmetadata(TestArray([1, 2]), "x") === true
+    @test DataAPI.colmetadata(TestArray([1, 2]), "x") == Dict("name" => "x")
+    @test DataAPI.hascolmetadata(TestArray([1, 2]), "y") === nothing
     @test_throws ArgumentError DataAPI.colmetadata(TestArray([1, 2]), "y")
-    @test DataAPI.hascolmetadata(TestArray([1, 2]), "y") == false
-    @test DataAPI.colmetadata(TestArray([1, 2])) == Dict("x" => Dict("name" => "col"))
-    @test DataAPI.hascolmetadata(TestArray([1, 2])) == true
+    @test DataAPI.hascolmetadata(TestArray([1, 2])) === true
+    @test DataAPI.colmetadata(TestArray([1, 2])) == Dict("x" => Dict("name" => "x"))
 end
 
 end # @testset "DataAPI"

@@ -322,7 +322,7 @@ The returned dictionary must contain columns `column` for which
 `hascolmetadata(table, column)` returns `true` and a value associated to such
 key must be `colmetadata(table, column)`.
 """
-colmetadata(::T, ::Any) where {T} =
+colmetadata(::T) where {T} =
     throw(ArgumentError("Key metadata is currently not supported for values of type $T"))
 
 """
@@ -330,6 +330,9 @@ colmetadata(::T, ::Any) where {T} =
 
 Return `true` if `x` has non-empty metadata, and return `false` if metadata is empty.
 Return `nothing` if `x` does not support metadata.
+
+If `hasmetadata` returns `Bool` then it is guaranteed that call to `metatada(x)`
+will not throw an error.
 """
 hasmetadata(::Any) = nothing
 
@@ -338,7 +341,10 @@ hasmetadata(::Any) = nothing
 
 Return `true` if column `column` of Tables.jl table `table` has non-empty metadata,
 and return `false` if metadata is empty.
-Return `nothing` if metadata is not supported.
+Return `nothing` if metadata is not supported for `column`.
+
+If `hascolmetadata` returns `Bool` then it is guaranteed that call to
+`colmetatada(table, columns)` will not throw an error.
 """
 hascolmetadata(::Any, ::Any) = nothing
 
@@ -348,6 +354,9 @@ hascolmetadata(::Any, ::Any) = nothing
 Return `true` if at least one column of of Tables.jl table `table` has non-empty
 metadata, and return `false` if metadata is empty for all columns.
 Return `nothing` if metadata is not supported.
+
+If `hascolmetadata` returns `Bool` then it is guaranteed that call to
+`colmetatada(table)` will not throw an error.
 """
 hascolmetadata(::Any) = nothing
 
