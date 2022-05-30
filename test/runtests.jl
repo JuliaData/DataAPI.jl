@@ -16,8 +16,8 @@ DataAPI.colmetadata(x::TestArray, col) =
 DataAPI.colmetadata(x::TestArray) = Dict("x" => Dict("name" => col))
 
 DataAPI.hasmetadata(x::TestArray) = true
-DataAPI.colhasmetadata(x::TestArray) = true
-DataAPI.colhasmetadata(x::TestArray, col) = col === "x"
+DataAPI.hascolmetadata(x::TestArray) = true
+DataAPI.hascolmetadata(x::TestArray, col) = col === "x"
 
 @testset "DataAPI" begin
 
