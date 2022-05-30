@@ -13,7 +13,7 @@ DataAPI.levels(x::TestArray) = reverse(DataAPI.levels(x.x))
 DataAPI.metadata(x::TestArray) = Dict("length" => length(x))
 DataAPI.colmetadata(x::TestArray, col) =
     col === "x" ? Dict("name" => col) : throw(ArgumentError("no metadata"))
-DataAPI.colmetadata(x::TestArray) = Dict("x" => Dict("name" => col))
+DataAPI.colmetadata(x::TestArray) = Dict("x" => DataAPI.colmetadata(x, "x"))
 
 DataAPI.hasmetadata(x::TestArray) = true
 DataAPI.hascolmetadata(x::TestArray) = true
