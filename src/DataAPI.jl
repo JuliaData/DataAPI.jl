@@ -288,34 +288,67 @@ using a `sink` function to materialize the table.
 function allcombinations end
 
 """
-    metadata(x, [key])
+    metadata(x)
 
 Return metadata associated with object `x` as an `AbstractDict{String}` object
 (or an object implementing the same interface).
-
-If the optional `key` argument is passed, return metadata
-associated with the indicated key (this feature can be used, for example,
-to return metadata attached to a given column in a Tables.jl table).
 
 Note that some systems, like Arrow.jl, might assume that metadata values are
 also `String`.
 """
 metadata(::T) where {T} =
     throw(ArgumentError("Metadata is currently not supported for values of type $T"))
-metadata(::T, ::Any) where {T} =
+
+"""
+    colmetadata(table, column)
+
+Return metadata associated with column `column` of Tables.jl table `table` as an
+`AbstractDict{String}` object (or an object implementing the same interface).
+
+Note that some systems, like Arrow.jl, might assume that metadata values are
+also `String`.
+"""
+colmetadata(::T, ::Any) where {T} =
     throw(ArgumentError("Key metadata is currently not supported for values of type $T"))
 
 """
-    hasmetadata(x, [key])
+    colmetadata(table)
+
+Return metadata associated with columns of Tables.jl table `table` as an
+`AbstractDict{<:Any, <:AbstractString{String}}` object (or an object implementing
+the same interface).
+
+The returned dictionary must contain columns `column` for which
+`hascolmetadata(table, column)` returns `true` and a value associated to such
+key must be `colmetadata(table, column)`.
+"""
+colmetadata(::T, ::Any) where {T} =
+    throw(ArgumentError("Key metadata is currently not supported for values of type $T"))
+
+"""
+    hasmetadata(x)
 
 Return `true` if `x` has non-empty metadata, and return `false` if metadata is empty.
 Return `nothing` if `x` does not support metadata.
-
-If the optional `key` argument is passed, return information if metadata
-is associated with `key` (this feature can be used, for example,
-to query about metadata attached to a given column in a Tables.jl table).
 """
 hasmetadata(::Any) = nothing
-hasmetadata(::Any, ::Any) = nothing
+
+"""
+    hascolmetadata(table, column)
+
+Return `true` if column `column` of Tables.jl table `table` has non-empty metadata,
+and return `false` if metadata is empty.
+Return `nothing` if metadata is not supported.
+"""
+hascolmetadata(::Any, ::Any) = nothing
+
+"""
+    hascolmetadata(table)
+
+Return `true` if at least one column of of Tables.jl table `table` has non-empty
+metadata, and return `false` if metadata is empty for all columns.
+Return `nothing` if metadata is not supported.
+"""
+hascolmetadata(::Any) = nothing
 
 end # module
