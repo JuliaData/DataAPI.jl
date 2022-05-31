@@ -297,7 +297,7 @@ Note that some systems, like Arrow.jl, might assume that metadata values are
 also `String`.
 """
 metadata(::T) where {T} =
-    throw(ArgumentError("Metadata is currently not supported for values of type $T"))
+    throw(ArgumentError("Objects of type $T do not support metadata"))
 
 """
     colmetadata(table, column)
@@ -309,7 +309,7 @@ Note that some systems, like Arrow.jl, might assume that metadata values are
 also `String`.
 """
 colmetadata(::T, ::Any) where {T} =
-    throw(ArgumentError("Key metadata is currently not supported for values of type $T"))
+    throw(ArgumentError("Objects of type $T do not support column metadata"))
 
 """
     colmetadata(table)
@@ -323,7 +323,7 @@ The returned dictionary must contain columns `column` for which
 key must be `colmetadata(table, column)`.
 """
 colmetadata(::T) where {T} =
-    throw(ArgumentError("Key metadata is currently not supported for values of type $T"))
+    throw(ArgumentError("Objects of type $T do not support column metadata"))
 
 """
     hasmetadata(x)
