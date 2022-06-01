@@ -312,20 +312,6 @@ colmetadata(::T, ::Any) where {T} =
     throw(ArgumentError("Objects of type $T do not support column metadata"))
 
 """
-    colmetadata(table)
-
-Return metadata associated with columns of Tables.jl table `table` as an
-`AbstractDict{<:Any, <:AbstractString{String}}` object (or an object implementing
-the same interface).
-
-The returned dictionary must contain columns `column` for which
-`hascolmetadata(table, column)` returns `true` and a value associated to such
-key must be `colmetadata(table, column)`.
-"""
-colmetadata(::T) where {T} =
-    throw(ArgumentError("Objects of type $T do not support column metadata"))
-
-"""
     hasmetadata(x)
 
 Return `true` if `x` has non-empty metadata, and return `false` if metadata is empty.
@@ -347,17 +333,5 @@ If `hascolmetadata` returns `Bool` then it is guaranteed that call to
 `colmetatada(table, columns)` will not throw an error.
 """
 hascolmetadata(::Any, ::Any) = nothing
-
-"""
-    hascolmetadata(table)
-
-Return `true` if at least one column of of Tables.jl table `table` has non-empty
-metadata, and return `false` if metadata is empty for all columns.
-Return `nothing` if metadata is not supported.
-
-If `hascolmetadata` returns `Bool` then it is guaranteed that call to
-`colmetatada(table)` will not throw an error.
-"""
-hascolmetadata(::Any) = nothing
 
 end # module

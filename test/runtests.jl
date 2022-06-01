@@ -13,10 +13,8 @@ DataAPI.levels(x::TestArray) = reverse(DataAPI.levels(x.x))
 DataAPI.metadata(x::TestArray) = Dict("length" => length(x))
 DataAPI.colmetadata(x::TestArray, col) =
     col === "x" ? Dict("name" => col) : throw(ArgumentError("no metadata"))
-DataAPI.colmetadata(x::TestArray) = Dict("x" => DataAPI.colmetadata(x, "x"))
 
 DataAPI.hasmetadata(x::TestArray) = true
-DataAPI.hascolmetadata(x::TestArray) = true
 DataAPI.hascolmetadata(x::TestArray, col) = col === "x" ? true : nothing
 
 @testset "DataAPI" begin
@@ -197,8 +195,6 @@ end
     @test DataAPI.colmetadata(TestArray([1, 2]), "x") == Dict("name" => "x")
     @test DataAPI.hascolmetadata(TestArray([1, 2]), "y") === nothing
     @test_throws ArgumentError DataAPI.colmetadata(TestArray([1, 2]), "y")
-    @test DataAPI.hascolmetadata(TestArray([1, 2])) === true
-    @test DataAPI.colmetadata(TestArray([1, 2])) == Dict("x" => Dict("name" => "x"))
 end
 
 end # @testset "DataAPI"
