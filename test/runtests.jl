@@ -185,8 +185,6 @@ end
     @test_throws ArgumentError DataAPI.metadata(1)
     @test DataAPI.hascolmetadata(1, 1) === nothing
     @test_throws ArgumentError DataAPI.colmetadata(1, 1)
-    @test DataAPI.hascolmetadata(1) === nothing
-    @test_throws ArgumentError DataAPI.colmetadata(1)
 
 
     @test DataAPI.hasmetadata(TestArray([1, 2]))
