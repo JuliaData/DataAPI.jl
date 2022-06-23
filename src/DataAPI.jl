@@ -305,6 +305,8 @@ metadata(::T) where {T} =
 Return metadata associated with column `column` of Tables.jl table `table` as an
 `AbstractDict{String}` object (or an object implementing the same interface).
 
+`column` should be any accepted column identifier by `table`, but at least `Symbol` must be supported.
+
 Note that some systems, like Arrow.jl, might assume that metadata values are
 also `String`.
 """
@@ -328,6 +330,9 @@ hasmetadata(::Any) = nothing
 Return `true` if column `column` of Tables.jl table `table` has non-empty metadata,
 and return `false` if metadata is empty.
 Return `nothing` if metadata is not supported for `column`.
+
+
+`column` should be any accepted column identifier by `table`, but at least `Symbol` must be supported.
 
 If `hascolmetadata` returns `Bool` then it is guaranteed that call to
 `colmetatada(table, columns)` will not throw an error.
