@@ -331,12 +331,22 @@ Return `true` if column `column` of Tables.jl table `table` has non-empty metada
 and return `false` if metadata is empty.
 Return `nothing` if metadata is not supported for `column`.
 
-
 `column` should be any accepted column identifier by `table`, but at least `Symbol` must be supported.
 
 If `hascolmetadata` returns `Bool` then it is guaranteed that call to
 `colmetatada(table, columns)` will not throw an error.
 """
 hascolmetadata(::Any, ::Any) = nothing
+
+"""
+    hascolmetadata(table)
+
+Return `true` if there is exists at least one column `column` of Tables.jl table
+`table` for which `hascolmetadata(table, column)` returns `true`; otherwise
+return `false`.
+
+Return `nothing` if metadata is not supported.
+"""
+hascolmetadata(::Any) = nothing
 
 end # module

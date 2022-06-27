@@ -16,6 +16,7 @@ DataAPI.colmetadata(x::TestArray, col) =
 
 DataAPI.hasmetadata(x::TestArray) = true
 DataAPI.hascolmetadata(x::TestArray, col) = col === "x" ? true : nothing
+DataAPI.hascolmetadata(x::TestArray) = true
 
 @testset "DataAPI" begin
 
@@ -185,10 +186,11 @@ end
     @test_throws ArgumentError DataAPI.metadata(1)
     @test DataAPI.hascolmetadata(1, 1) === nothing
     @test_throws ArgumentError DataAPI.colmetadata(1, 1)
-
+    @test DataAPI.hascolmetadata(1) === nothing
 
     @test DataAPI.hasmetadata(TestArray([1, 2]))
     @test DataAPI.metadata(TestArray([1, 2])) == Dict("length" => 2)
+    @test DataAPI.hascolmetadata(TestArray([1, 2])) === true
     @test DataAPI.hascolmetadata(TestArray([1, 2]), "x") === true
     @test DataAPI.colmetadata(TestArray([1, 2]), "x") == Dict("name" => "x")
     @test DataAPI.hascolmetadata(TestArray([1, 2]), "y") === nothing
