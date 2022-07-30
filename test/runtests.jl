@@ -21,8 +21,8 @@ function DataAPI.metadata(x::TestMeta, key; full::Bool=false)
     return full ? x.table[key] : x.table[key][1]
 end
 
-function DataAPI.metadata(x::TestMeta, key, default)
-    haskey(x.test, key) && return DataAPI.metadata(x, key, full=full)
+function DataAPI.metadata(x::TestMeta, key, default; full::Bool=false)
+    haskey(x.table, key) && return DataAPI.metadata(x, key, full=full)
     full ? (default, :none) : default
 end
 
@@ -37,8 +37,8 @@ function DataAPI.colmetadata(x::TestMeta, col, key; full::Bool=false)
     return full ? x.col[col][key] : x.col[col][key][1]
 end
 
-function DataAPI.colmetadata(x::TestMeta, col, key, default)
-    haskey(x.col, col) && haskey(x.col[col], key) && return DataAPI.metadata(x, col, key, full=full)
+function DataAPI.colmetadata(x::TestMeta, col, key, default; full::Bool=false)
+    haskey(x.col, col) && haskey(x.col[col], key) && return DataAPI.colmetadata(x, col, key, full=full)
     full ? (default, :none) : default
 end
 
@@ -52,7 +52,7 @@ function DataAPI.colmetadatakeys(x::TestMeta)
     return Any[col => keys(x.col[col]) for col in keys(x.col)]
 end
 
-function DataAPI.metadata!(x::TestMeta, col, key, value; style)
+function DataAPI.colmetadata!(x::TestMeta, col, key, value; style)
     if haskey(x.col, col)
         x.col[col][key] = (value, style)
     else
@@ -242,28 +242,26 @@ end
     @test DataAPI.colmetadatakeys(1) == ()
 
     tm = TestMeta()
-    @test DataAPI.metadatakeys(tm) == ()
+    @test isempty(DataAPI.metadatakeys(tm))
     @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
     @test collect(DataAPI.metadatakeys(tm)) == ["a"]
-    @test_throws ArgumentError DataAPI.metadata(tm, "b")
-    @test_throws ArgumentError DataAPI.metadata(tm, "b", full=true)
+    @test_throws KeyError DataAPI.metadata(tm, "b")
+    @test_throws KeyError DataAPI.metadata(tm, "b", full=true)
     @test DataAPI.metadata(tm, "a") == "100"
     @test DataAPI.metadata(tm, "a", full=true) == ("100", :note)
     @test DataAPI.metadata(tm, "b", 10) == 10
     @test DataAPI.metadata(tm, "b", 10, full=true) == (10, :none)
     @test DataAPI.metadata(tm, "a", 10) == "100"
     @test DataAPI.metadata(tm, "a", 10, full=true) == ("100", :note)
-
-
     @test DataAPI.colmetadatakeys(tm) == ()
     @test DataAPI.colmetadatakeys(tm, "col") == ()
-    @test_throws ArgumentError DataAPI.colmetadata!(tm, "col", "a", "100", style=:note)
+    @test DataAPI.colmetadata!(tm, "col", "a", "100", style=:note) == tm
     @test [k => collect(v) for  (k, v) in DataAPI.colmetadatakeys(tm)] == ["col" => ["a"]]
     @test collect(DataAPI.colmetadatakeys(tm, "col")) == ["a"]
-    @test_throws ArgumentError DataAPI.colmetadata(tm, "col", "b")
-    @test_throws ArgumentError DataAPI.colmetadata(tm, "col", "b", full=true)
-    @test_throws ArgumentError DataAPI.colmetadata(tm, "col2", "a")
-    @test_throws ArgumentError DataAPI.colmetadata(tm, "col2", "a", full=true)
+    @test_throws KeyError DataAPI.colmetadata(tm, "col", "b")
+    @test_throws KeyError DataAPI.colmetadata(tm, "col", "b", full=true)
+    @test_throws KeyError DataAPI.colmetadata(tm, "col2", "a")
+    @test_throws KeyError DataAPI.colmetadata(tm, "col2", "a", full=true)
     @test DataAPI.colmetadata(tm, "col", "b", 10) == 10
     @test DataAPI.colmetadata(tm, "col", "b", 10, full=true) == (10, :none)
     @test DataAPI.colmetadata(tm, "col2", "a", 10) == 10
@@ -272,7 +270,6 @@ end
     @test DataAPI.colmetadata(tm, "col", "a", full=true) == ("100", :note)
     @test DataAPI.colmetadata(tm, "col", "a", 10) == "100"
     @test DataAPI.colmetadata(tm, "col", "a", 10, full=true) == ("100", :note)
-
 end
 
 end # @testset "DataAPI"

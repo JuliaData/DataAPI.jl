@@ -332,7 +332,7 @@ If `x` does not support setting metadata throw `ArgumentError`.
 
 $STYLE_INFO
 """
-metadata!(::T, ::Any; style) where {T} =
+metadata!(::T, ::Any, ::Any; style) where {T} =
     throw(ArgumentError("Objects of type $T do not support setting metadata"))
 
 """
@@ -380,7 +380,7 @@ If `x` does not support setting metadata for column `col` throw `ArgumentError`.
 
 $STYLE_INFO
 """
-colmetadata!(::T, ::Any, ::Any; style) where {T} =
+colmetadata!(::T, ::Any, ::Any, ::Any; style) where {T} =
     throw(ArgumentError("Objects of type $T do not support setting metadata"))
 
 end # module
