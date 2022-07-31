@@ -228,7 +228,11 @@ end
     @test_throws ArgumentError DataAPI.colmetadata!(1, :col, "a", 10, style=:none)
     @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a")
     @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a", style=true)
+    @test_throws ArgumentError DataAPI.colmetadata!(1, 1, "a", 10, style=:none)
+    @test_throws ArgumentError DataAPI.colmetadata(1, 1, "a")
+    @test_throws ArgumentError DataAPI.colmetadata(1, 1, "a", style=true)
     @test DataAPI.colmetadatakeys(1, :col) == ()
+    @test DataAPI.colmetadatakeys(1, 1) == ()
     @test DataAPI.colmetadatakeys(1) == ()
 
     tm = TestMeta()

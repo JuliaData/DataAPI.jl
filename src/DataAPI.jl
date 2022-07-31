@@ -379,7 +379,12 @@ If `col` is passed return an iterator of metadata keys for which
 `metadata(x, col, key)` returns a metadata value.
 If `x` does not support metadata for column `col` return `()`.
 
-$COL_INFO
+`col` must be a type that is supported by table `x`. Following the Tables.jl
+contract `Symbol` and `Int` must be supported. However, tables that allow other
+column indexing (e.g., using strings or integers other than `Int`) are allowed
+to accept such types of `col` argument. Passing `col` that is not a column
+of `x` can either throw an error or return `()` (this duality is allowed as
+some Tables.jl do not have schema).
 
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
 pairs for all columns that have metadata.
