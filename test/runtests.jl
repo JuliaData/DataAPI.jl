@@ -49,7 +49,7 @@ end
 
 function DataAPI.colmetadatakeys(x::TestMeta)
     isempty(x.col) && return ()
-    return Any[col => keys(x.col[col]) for col in keys(x.col)]
+    return (col => keys(x.col[col]) for col in keys(x.col))
 end
 
 function DataAPI.colmetadata!(x::TestMeta, col, key, value; style)

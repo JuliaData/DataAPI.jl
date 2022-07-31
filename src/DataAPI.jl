@@ -290,7 +290,7 @@ function allcombinations end
 const STYLE_INFO = """
 One of the uses of the metadata style information is decision
 how the metadata should be propagated when `x` is transformed. This interface
-defines `:none` style that indicates that metadata should not be propagated
+defines the `:none` style that indicates that metadata should not be propagated
 under transformations. At least this style must be supported by any type
 defining support for metadata.
 """
@@ -319,7 +319,7 @@ metadata(::Any, ::Any, default; full::Bool=false) = full ? (default, :none) : de
     metadatakeys(x)
 
 Return an iterator of metadata keys for which `metadata(x, key)` returns a
-metdata value. If `x` does not support metadata return `()`.
+metadata value. If `x` does not support metadata return `()`.
 """
 metadatakeys(::Any) = ()
 
@@ -361,7 +361,7 @@ colmetadata(::Any, ::Any, ::Any, default; full::Bool=false) = full ? (default, :
     colmetadatakeys(x, [col])
 
 If `col` is passed return an iterator of metadata keys for which
-`metadata(x, col, key)` returns a metdata value.
+`metadata(x, col, key)` returns a metadata value.
 If `x` does not support metadata for column `col` return `()`.
 
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
