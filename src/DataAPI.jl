@@ -295,25 +295,33 @@ under transformations. At least this style must be supported by any type
 defining support for metadata.
 """
 
+const COL_INFO = """
+`col` must be a type that is supported by table `x`. Following the Tables.jl
+contract `Symbol` and `Int` must be supported. However, tables that allow other
+column indexing (e.g., using strings or integers other than `Int`) are allowed
+to accept such types of `col` argument. Passing `col` that is not a column
+of `x` must throw an error.
 """
-    metadata(x, key, [default]; full::Bool=false)
+
+"""
+    metadata(x, key::AbstractString; style::Bool=false)
 
 Return metadata value associated with object `x` for key `key`.
 If `x` does not support metadata throw `ArgumentError`.
 If `x` supports metadata, but does not have a mapping for `key` throw `KeyError`.
 
-If `full=true` return a tuple of metadata value and metadata style. Metadata
+Functions adding methods to `metadata` should define them only with
+`key::AbstractString` signature. Passing `key` that is not a string to
+`metadata` must throw `MethodError`.
+
+If `style=true` return a tuple of metadata value and metadata style. Metadata
 style is an additional information about the kind of metadata that is stored
 for the `key`.
 
 $STYLE_INFO
-
-If `default` is passed then return it if `x` does not support metadata or
-does not have a mapping for `key`. The style of `default` value is `:none`.
 """
-metadata(::T, ::Any; full::Bool=false) where {T} =
+metadata(::T, ::AbstractString; style::Bool=false) where {T} =
     throw(ArgumentError("Objects of type $T do not support getting metadata"))
-metadata(::Any, ::Any, default; full::Bool=false) = full ? (default, :none) : default
 
 """
     metadatakeys(x)
@@ -324,38 +332,45 @@ metadata value. If `x` does not support metadata return `()`.
 metadatakeys(::Any) = ()
 
 """
-    metadata!(x, key, value; style)
+    metadata!(x, key::AbstractString, value; style)
 
 Set metadata for object `x` for key `key` to have value `value` and style `style`
 and return `x`.
 If `x` does not support setting metadata throw `ArgumentError`.
 
+Functions adding methods to `metadata!` should define them only with
+`key::AbstractString` signature. Passing `key` that is not a string to
+`metadata` must throw `MethodError`.
+
 $STYLE_INFO
 """
-metadata!(::T, ::Any, ::Any; style) where {T} =
+metadata!(::T, ::AbstractString, ::Any; style) where {T} =
     throw(ArgumentError("Objects of type $T do not support setting metadata"))
 
 """
-    colmetadata(x, col, key, [default]; full::Bool=false)
+    colmetadata(x, col, key::AbstractString; style::Bool=false)
 
 Return metadata value associated with table `x` for column `col` and key `key`.
 If `x` does not support metadata for column `col` throw `ArgumentError`. If `x`
 supports metadata, but does not have a mapping for column `col` for `key` throw
 `KeyError`.
 
-If `full=true` return a tuple of metadata value and metadata style. Metadata
+Functions adding methods to `colmetadata` should define them only with
+`key::AbstractString` signature. Passing `key` that is not a string to
+`metadata` must throw `MethodError`.
+
+$COL_INFO
+
+If `style=true` return a tuple of metadata value and metadata style. Metadata
 style is an additional information about the kind of metadata that is stored for
 the `key`.
 
 $STYLE_INFO
-
-If `default` is passed then return it if `x` does not support metadata for
-column `col` or does not have a mapping for `key` for column `col`. The style of
-`default` value is `:none`.
 """
-colmetadata(::T, ::Any, ::Any; full::Bool=false) where {T} =
+colmetadata(::T, ::Int, ::AbstractString; style::Bool=false) where {T} =
     throw(ArgumentError("Objects of type $T do not support getting column metadata"))
-colmetadata(::Any, ::Any, ::Any, default; full::Bool=false) = full ? (default, :none) : default
+colmetadata(::T, ::Symbol, ::AbstractString; style::Bool=false) where {T} =
+    throw(ArgumentError("Objects of type $T do not support getting column metadata"))
 
 """
     colmetadatakeys(x, [col])
@@ -364,23 +379,34 @@ If `col` is passed return an iterator of metadata keys for which
 `metadata(x, col, key)` returns a metadata value.
 If `x` does not support metadata for column `col` return `()`.
 
+$COL_INFO
+
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
 pairs for all columns that have metadata.
 If `x` does not support metadata for any column return `()`.
 """
-colmetadatakeys(::Any, ::Any) = ()
+colmetadatakeys(::Any, ::Int) = ()
+colmetadatakeys(::Any, ::Symbol) = ()
 colmetadatakeys(::Any) = ()
 
 """
-    colmetadata!(x, key, value; style)
+    colmetadata!(x, col, key::AbstractString, value; style)
 
 Set metadata for table `x` for column `col` for key `key` to have value `value`
 and style `style`.
 If `x` does not support setting metadata for column `col` throw `ArgumentError`.
 
+Functions adding methods to `colmetadata!` should define them only with
+`key::AbstractString` signature. Passing `key` that is not a string to
+`metadata` must throw `MethodError`.
+
+$COL_INFO
+
 $STYLE_INFO
 """
-colmetadata!(::T, ::Any, ::Any, ::Any; style) where {T} =
+colmetadata!(::T, ::Int, ::AbstractString, ::Any; style) where {T} =
+    throw(ArgumentError("Objects of type $T do not support setting metadata"))
+colmetadata!(::T, ::Symbol, ::AbstractString, ::Any; style) where {T} =
     throw(ArgumentError("Objects of type $T do not support setting metadata"))
 
 end # module
