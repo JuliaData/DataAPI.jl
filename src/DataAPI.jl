@@ -288,19 +288,17 @@ using a `sink` function to materialize the table.
 function allcombinations end
 
 const STYLE_INFO = """
-One of the uses of the metadata style information is decision
+One of the uses of the metadata `style` is decision
 how the metadata should be propagated when `x` is transformed. This interface
 defines the `:none` style that indicates that metadata should not be propagated
-under transformations. At least this style must be supported by any type
+under transformations. At least this style is allowed by any type
 defining support for metadata.
 """
 
 const COL_INFO = """
-`col` must be a type that is supported by table `x`. Following the Tables.jl
-contract `Symbol` and `Int` must be supported. However, tables that allow other
-column indexing (e.g., using strings or integers other than `Int`) are allowed
-to accept such types of `col` argument. Passing `col` that is not a column
-of `x` must throw an error.
+`col` must have a type that is supported by table `x` for column indexing.
+Following the Tables.jl contract `Symbol` and `Int` are always allowed.
+Passing `col` that is not a column of `x` throws an error.
 """
 
 """
@@ -308,11 +306,11 @@ of `x` must throw an error.
 
 Return metadata value associated with object `x` for key `key`.
 If `x` does not support metadata throw `ArgumentError`.
-If `x` supports metadata, but does not have a mapping for `key` throw `KeyError`.
+If `x` supports metadata, but does not have a mapping for `key` throw
+`KeyError`.
 
-Functions adding methods to `metadata` should define them only with
-`key::AbstractString` signature. Passing `key` that is not a string to
-`metadata` must throw `MethodError`.
+Passing `key` that is not an `AbstractString` to `metadata` throws
+`MethodError`.
 
 If `style=true` return a tuple of metadata value and metadata style. Metadata
 style is an additional information about the kind of metadata that is stored
@@ -334,13 +332,12 @@ metadatakeys(::Any) = ()
 """
     metadata!(x, key::AbstractString, value; style)
 
-Set metadata for object `x` for key `key` to have value `value` and style `style`
-and return `x`.
+Set metadata for object `x` for key `key` to have value `value`
+and style `style` and return `x`.
 If `x` does not support setting metadata throw `ArgumentError`.
 
-Functions adding methods to `metadata!` should define them only with
-`key::AbstractString` signature. Passing `key` that is not a string to
-`metadata` must throw `MethodError`.
+Passing `key` that is not an `AbstractString` to `metadata!`
+throws `MethodError`.
 
 $STYLE_INFO
 """
@@ -355,9 +352,8 @@ If `x` does not support metadata for column `col` throw `ArgumentError`. If `x`
 supports metadata, but does not have a mapping for column `col` for `key` throw
 `KeyError`.
 
-Functions adding methods to `colmetadata` should define them only with
-`key::AbstractString` signature. Passing `key` that is not a string to
-`metadata` must throw `MethodError`.
+Passing `key` that is not an `AbstractString` to `colmetadata`
+throws `MethodError`.
 
 $COL_INFO
 
@@ -375,20 +371,19 @@ colmetadata(::T, ::Symbol, ::AbstractString; style::Bool=false) where {T} =
 """
     colmetadatakeys(x, [col])
 
-If `col` is passed return an iterator of metadata keys for which
-`metadata(x, col, key)` returns a metadata value.
-If `x` does not support metadata for column `col` return `()`.
+If `col` is passed return an iterator of metadata keys for which `metadata(x,
+col, key)` returns a metadata value. If `x` does not support metadata for column
+`col` return `()`.
 
-`col` must be a type that is supported by table `x`. Following the Tables.jl
-contract `Symbol` and `Int` must be supported. However, tables that allow other
-column indexing (e.g., using strings or integers other than `Int`) are allowed
-to accept such types of `col` argument. Passing `col` that is not a column
-of `x` can either throw an error or return `()` (this duality is allowed as
-some Tables.jl do not have schema).
+`col` must have a type that is supported by table `x` for column indexing.
+Following the Tables.jl contract `Symbol` and `Int` are always allowed. Passing
+`col` that is not a column of `x` can either throws an error (this is a
+preferred behavior if it is possible) or returns `()` (this duality is allowed
+as some Tables.jl tables do not have schema).
 
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
-pairs for all columns that have metadata.
-If `x` does not support metadata for any column return `()`.
+pairs for all columns that have metadata. If `x` does not support metadata for
+any column return `()`.
 """
 colmetadatakeys(::Any, ::Int) = ()
 colmetadatakeys(::Any, ::Symbol) = ()
@@ -401,9 +396,8 @@ Set metadata for table `x` for column `col` for key `key` to have value `value`
 and style `style`.
 If `x` does not support setting metadata for column `col` throw `ArgumentError`.
 
-Functions adding methods to `colmetadata!` should define them only with
-`key::AbstractString` signature. Passing `key` that is not a string to
-`metadata` must throw `MethodError`.
+Passing `key` that is not an `AbstractString` to `colmetadata!`
+throws `MethodError`.
 
 $COL_INFO
 
