@@ -367,7 +367,7 @@ col, key)` returns a metadata value. If `x` does not support metadata for column
 
 `col` must have a type that is supported by table `x` for column indexing.
 Following the Tables.jl contract `Symbol` and `Int` are always allowed. Passing
-`col` that is not a column of `x` can either throws an error (this is a
+`col` that is not a column of `x` either throws an error (this is a
 preferred behavior if it is possible) or returns `()` (this duality is allowed
 as some Tables.jl tables do not have a schema).
 
