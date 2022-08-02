@@ -291,8 +291,7 @@ const STYLE_INFO = """
 One of the uses of the metadata `style` is decision
 how the metadata should be propagated when `x` is transformed. This interface
 defines the `:none` style that indicates that metadata should not be propagated
-under transformations. At least this style is allowed by any type
-defining support for metadata.
+under transformations. All types supporting metadata allow at least this style.
 """
 
 const COL_INFO = """
@@ -308,9 +307,6 @@ Return metadata value associated with object `x` for key `key`.
 If `x` does not support metadata throw `ArgumentError`.
 If `x` supports metadata, but does not have a mapping for `key` throw
 `KeyError`.
-
-Passing `key` that is not an `AbstractString` to `metadata` throws
-`MethodError`.
 
 If `style=true` return a tuple of metadata value and metadata style. Metadata
 style is an additional information about the kind of metadata that is stored
@@ -336,9 +332,6 @@ Set metadata for object `x` for key `key` to have value `value`
 and style `style` and return `x`.
 If `x` does not support setting metadata throw `ArgumentError`.
 
-Passing `key` that is not an `AbstractString` to `metadata!`
-throws `MethodError`.
-
 $STYLE_INFO
 """
 metadata!(::T, ::AbstractString, ::Any; style) where {T} =
@@ -351,9 +344,6 @@ Return metadata value associated with table `x` for column `col` and key `key`.
 If `x` does not support metadata for column `col` throw `ArgumentError`. If `x`
 supports metadata, but does not have a mapping for column `col` for `key` throw
 `KeyError`.
-
-Passing `key` that is not an `AbstractString` to `colmetadata`
-throws `MethodError`.
 
 $COL_INFO
 
@@ -379,11 +369,11 @@ col, key)` returns a metadata value. If `x` does not support metadata for column
 Following the Tables.jl contract `Symbol` and `Int` are always allowed. Passing
 `col` that is not a column of `x` can either throws an error (this is a
 preferred behavior if it is possible) or returns `()` (this duality is allowed
-as some Tables.jl tables do not have schema).
+as some Tables.jl tables do not have a schema).
 
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
-pairs for all columns that have metadata. If `x` does not support metadata for
-any column return `()`.
+pairs for all columns that have metadata. If `x` does not support column
+metadata return `()`.
 """
 colmetadatakeys(::Any, ::Int) = ()
 colmetadatakeys(::Any, ::Symbol) = ()
@@ -395,9 +385,6 @@ colmetadatakeys(::Any) = ()
 Set metadata for table `x` for column `col` for key `key` to have value `value`
 and style `style`.
 If `x` does not support setting metadata for column `col` throw `ArgumentError`.
-
-Passing `key` that is not an `AbstractString` to `colmetadata!`
-throws `MethodError`.
 
 $COL_INFO
 
