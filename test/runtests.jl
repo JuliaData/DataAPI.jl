@@ -257,6 +257,8 @@ end
     @test_throws ArgumentError DataAPI.colmetadata!(1, :col, "a", 10, style=:none)
     @test_throws ArgumentError DataAPI.deletecolmetadata!(1, :col, "a")
     @test_throws ArgumentError DataAPI.deletecolmetadata!(1, :col)
+    @test_throws ArgumentError DataAPI.deletecolmetadata!(1, 1, "a")
+    @test_throws ArgumentError DataAPI.deletecolmetadata!(1, 1)
     @test_throws ArgumentError DataAPI.deletecolmetadata!(1)
     @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a")
     @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a", style=true)
