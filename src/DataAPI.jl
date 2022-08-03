@@ -417,11 +417,11 @@ If `key` is not passed delete all metadata for table `x` for column `col`.
 If only `x` is passed delete all column level metadata for table `x`.
 If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
 """
-deletecolmetadata!(::T, :Symbol, ::AbstractString) where {T} =
+deletecolmetadata!(::T, ::Symbol, ::AbstractString) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
 deletecolmetadata!(::T, :Int, ::AbstractString) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-deletecolmetadata!(::T, :Symbol) where {T} =
+deletecolmetadata!(::T, ::Symbol) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
 deletecolmetadata!(::T, :Int) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
