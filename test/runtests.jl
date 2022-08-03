@@ -275,10 +275,10 @@ end
     @test_throws KeyError DataAPI.metadata(tm, "b", style=true)
     @test DataAPI.metadata(tm, "a") == "100"
     @test DataAPI.metadata(tm, "a", style=true) == ("100", :note)
-    DataAPI.deletemetadata!(1, "a")
+    DataAPI.deletemetadata!(tm, "a")
     @test isempty(DataAPI.metadatakeys(tm))
     @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
-    DataAPI.deletemetadata!(1)
+    DataAPI.deletemetadata!(tm)
     @test isempty(DataAPI.metadatakeys(tm))
 
     @test DataAPI.colmetadatakeys(tm) == ()
