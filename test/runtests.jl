@@ -292,14 +292,14 @@ end
     @test_throws KeyError DataAPI.colmetadata(tm, :col2, "a", style=true)
     @test DataAPI.colmetadata(tm, :col, "a") == "100"
     @test DataAPI.colmetadata(tm, :col, "a", style=true) == ("100", :note)
-    @test DataAPI.deletecolmetadata!(tm, :col, "a")
-    @test DataAPI.colmetadatakeys(tm, :col) == ()
+    DataAPI.deletecolmetadata!(tm, :col, "a")
+    @test isempty(DataAPI.colmetadatakeys(tm, :col))
     @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
-    @test DataAPI.deletecolmetadata!(tm, :col)
-    @test DataAPI.colmetadatakeys(tm, :col) == ()
+    DataAPI.deletecolmetadata!(tm, :col)
+    @test isempty(DataAPI.colmetadatakeys(tm, :col))
     @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
-    @test DataAPI.deletecolmetadata!(tm)
-    @test DataAPI.colmetadatakeys(tm) == ()
+    DataAPI.deletecolmetadata!(tm)
+    @test isempty(DataAPI.colmetadatakeys(tm))
 end
 
 end # @testset "DataAPI"
