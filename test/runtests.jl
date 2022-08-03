@@ -38,7 +38,7 @@ function DataAPI.metadata!(x::TestMeta, key::AbstractString, value; style)
 end
 
 DataAPI.deletemetadata!(x::TestMeta, key::AbstractString) = delete!(x.table, key)
-DataAPI.deletemetadata!(x::TestMeta) = empty!(x.table, key)
+DataAPI.deletemetadata!(x::TestMeta) = empty!(x.table)
 
 function DataAPI.colmetadata(x::TestMeta, col::Symbol, key::AbstractString; style::Bool=false)
     return style ? x.col[col][key] : x.col[col][key][1]
