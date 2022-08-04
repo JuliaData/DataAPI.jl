@@ -38,7 +38,7 @@ function DataAPI.metadata!(x::TestMeta, key::AbstractString, value; style)
 end
 
 DataAPI.deletemetadata!(x::TestMeta, key::AbstractString) = delete!(x.table, key)
-DataAPI.deletemetadata!(x::TestMeta) = empty!(x.table)
+DataAPI.emptymetadata!(x::TestMeta) = empty!(x.table)
 
 function DataAPI.colmetadata(x::TestMeta, col::Symbol, key::AbstractString; style::Bool=false)
     return style ? x.col[col][key] : x.col[col][key][1]
@@ -72,7 +72,7 @@ function DataAPI.deletecolmetadata!(x::TestMeta, col::Symbol, key::AbstractStrin
     return x
 end
 
-function DataAPI.deletecolmetadata!(x::TestMeta, col::Symbol)
+function DataAPI.emptycolmetadata!(x::TestMeta, col::Symbol)
     if haskey(x.col, col)
         delete!(x.col, col)
     else
@@ -81,7 +81,7 @@ function DataAPI.deletecolmetadata!(x::TestMeta, col::Symbol)
     return x
 end
 
-DataAPI.deletecolmetadata!(x::TestMeta) = empty!(x.col)
+DataAPI.emptycolmetadata!(x::TestMeta) = empty!(x.col)
 
 @testset "DataAPI" begin
 
@@ -249,17 +249,17 @@ end
 @testset "metadata" begin
     @test_throws ArgumentError DataAPI.metadata!(1, "a", 10, style=:none)
     @test_throws ArgumentError DataAPI.deletemetadata!(1, "a")
-    @test_throws ArgumentError DataAPI.deletemetadata!(1)
+    @test_throws ArgumentError DataAPI.emptymetadata!(1)
     @test_throws ArgumentError DataAPI.metadata(1, "a")
     @test_throws ArgumentError DataAPI.metadata(1, "a", style=true)
     @test DataAPI.metadatakeys(1) == ()
 
     @test_throws ArgumentError DataAPI.colmetadata!(1, :col, "a", 10, style=:none)
     @test_throws ArgumentError DataAPI.deletecolmetadata!(1, :col, "a")
-    @test_throws ArgumentError DataAPI.deletecolmetadata!(1, :col)
+    @test_throws ArgumentError DataAPI.emptycolmetadata!(1, :col)
     @test_throws ArgumentError DataAPI.deletecolmetadata!(1, 1, "a")
-    @test_throws ArgumentError DataAPI.deletecolmetadata!(1, 1)
-    @test_throws ArgumentError DataAPI.deletecolmetadata!(1)
+    @test_throws ArgumentError DataAPI.emptycolmetadata!(1, 1)
+    @test_throws ArgumentError DataAPI.emptycolmetadata!(1)
     @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a")
     @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a", style=true)
     @test_throws ArgumentError DataAPI.colmetadata!(1, 1, "a", 10, style=:none)
@@ -280,7 +280,7 @@ end
     DataAPI.deletemetadata!(tm, "a")
     @test isempty(DataAPI.metadatakeys(tm))
     @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
-    DataAPI.deletemetadata!(tm)
+    DataAPI.emptymetadata!(tm)
     @test isempty(DataAPI.metadatakeys(tm))
 
     @test DataAPI.colmetadatakeys(tm) == ()
@@ -297,10 +297,10 @@ end
     DataAPI.deletecolmetadata!(tm, :col, "a")
     @test isempty(DataAPI.colmetadatakeys(tm, :col))
     @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
-    DataAPI.deletecolmetadata!(tm, :col)
+    DataAPI.emptycolmetadata!(tm, :col)
     @test isempty(DataAPI.colmetadatakeys(tm, :col))
     @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
-    DataAPI.deletecolmetadata!(tm)
+    DataAPI.emptycolmetadata!(tm)
     @test isempty(DataAPI.colmetadatakeys(tm))
 end
 

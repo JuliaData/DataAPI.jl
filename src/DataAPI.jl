@@ -338,7 +338,7 @@ metadata!(::T, ::AbstractString, ::Any; style) where {T} =
     throw(ArgumentError("Objects of type $T do not support setting metadata"))
 
 """
-    deletemetadata!(x, [key::AbstractString])
+    deletemetadata!(x, key::AbstractString)
 
 Delete metadata for object `x` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
@@ -347,7 +347,14 @@ If `x` does not support metadata deletion throw `ArgumentError`.
 """
 deletemetadata!(::T, ::AbstractString) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-deletemetadata!(::T) where {T} =
+
+"""
+    emptymetadata!(x)
+
+Delete all metadata for object `x`.
+If `x` does not support metadata deletion throw `ArgumentError`.
+"""
+emptymetadata!(::T) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
 
 """
@@ -409,23 +416,29 @@ colmetadata!(::T, ::Symbol, ::AbstractString, ::Any; style) where {T} =
     throw(ArgumentError("Objects of type $T do not support setting metadata"))
 
 """
-    deletecolmetadata!(x, [col], [key::AbstractString])
+    deletecolmetadata!(x, col, key::AbstractString)
 
 Delete metadata for table `x` for column `col` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
-If `key` is not passed delete all metadata for table `x` for column `col`.
-If only `x` is passed delete all column level metadata for table `x`.
 If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
 """
 deletecolmetadata!(::T, ::Symbol, ::AbstractString) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
 deletecolmetadata!(::T, ::Int, ::AbstractString) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-deletecolmetadata!(::T, ::Symbol) where {T} =
+
+"""
+    emptycolmetadata!(x, [col])
+
+Delete all metadata for table `x` for column `col`.
+If `col` is not passed delete all column level metadata for table `x`.
+If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
+"""
+emptycolmetadata!(::T, ::Symbol) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-deletecolmetadata!(::T, ::Int) where {T} =
+emptycolmetadata!(::T, ::Int) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-deletecolmetadata!(::T) where {T} =
+emptycolmetadata!(::T) where {T} =
     throw(ArgumentError("Objects of type $T do not support metadata deletion"))
 
 end # module
