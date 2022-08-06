@@ -342,7 +342,6 @@ metadata!(::T, ::AbstractString, ::Any; style) where {T} =
 
 Delete metadata for object `x` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
-If `key` is not passed delete all metadata for object `x`.
 If `x` does not support metadata deletion throw `ArgumentError`.
 """
 deletemetadata!(::T, ::AbstractString) where {T} =
