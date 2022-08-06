@@ -171,7 +171,7 @@ end
 """
     Between(first, last)
 
-Select the columns between `first` and `last` from a table.
+Select the columns between `first` and `last` (including both) from a table.
 """
 struct Between{T1 <: Union{Int, Symbol}, T2 <: Union{Int, Symbol}}
     first::T1
