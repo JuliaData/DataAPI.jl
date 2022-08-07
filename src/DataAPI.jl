@@ -391,8 +391,8 @@ preferred behavior if it is possible) or returns `()` (this duality is allowed
 as some Tables.jl tables do not have a schema).
 
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
-pairs for all columns that have metadata. If `x` does not support column
-metadata return `()`.
+pairs for all columns that have metadata, where `col` are `Symbol`.
+If `x` does not support column metadata return `()`.
 """
 colmetadatakeys(::Any, ::Int) = ()
 colmetadatakeys(::Any, ::Symbol) = ()
