@@ -247,14 +247,14 @@ end
 end
 
 @testset "metadata" begin
-    @test_throws ArgumentError DataAPI.metadata!(1, "a", 10, style=:none)
+    @test_throws ArgumentError DataAPI.metadata!(1, "a", 10, style=:default)
     @test_throws ArgumentError DataAPI.deletemetadata!(1, "a")
     @test_throws ArgumentError DataAPI.emptymetadata!(1)
     @test_throws ArgumentError DataAPI.metadata(1, "a")
     @test_throws ArgumentError DataAPI.metadata(1, "a", style=true)
     @test DataAPI.metadatakeys(1) == ()
 
-    @test_throws ArgumentError DataAPI.colmetadata!(1, :col, "a", 10, style=:none)
+    @test_throws ArgumentError DataAPI.colmetadata!(1, :col, "a", 10, style=:default)
     @test_throws ArgumentError DataAPI.deletecolmetadata!(1, :col, "a")
     @test_throws ArgumentError DataAPI.emptycolmetadata!(1, :col)
     @test_throws ArgumentError DataAPI.deletecolmetadata!(1, 1, "a")
@@ -262,7 +262,7 @@ end
     @test_throws ArgumentError DataAPI.emptycolmetadata!(1)
     @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a")
     @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a", style=true)
-    @test_throws ArgumentError DataAPI.colmetadata!(1, 1, "a", 10, style=:none)
+    @test_throws ArgumentError DataAPI.colmetadata!(1, 1, "a", 10, style=:default)
     @test_throws ArgumentError DataAPI.colmetadata(1, 1, "a")
     @test_throws ArgumentError DataAPI.colmetadata(1, 1, "a", style=true)
     @test DataAPI.colmetadatakeys(1, :col) == ()
