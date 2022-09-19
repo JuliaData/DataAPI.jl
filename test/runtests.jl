@@ -10,6 +10,79 @@ Base.size(x::TestArray) = size(x.x)
 Base.getindex(x::TestArray, i) = x.x[i]
 DataAPI.levels(x::TestArray) = reverse(DataAPI.levels(x.x))
 
+# An example implementation of metadata
+# For simplicity Int col indexing is not implemented
+# and no checking if col is a column of a table is performed
+
+struct TestMeta
+    table::Dict{String, Any}
+    col::Dict{Symbol, Dict{String, Any}}
+
+    TestMeta() = new(Dict{String, Any}(), Dict{Symbol, Dict{String, Any}}())
+end
+
+function DataAPI.metadata(x::TestMeta, key::AbstractString; style::Bool=false)
+    return style ? x.table[key] : x.table[key][1]
+end
+
+DataAPI.metadatakeys(x::TestMeta) = keys(x.table)
+
+function DataAPI.metadata!(x::TestMeta, key::AbstractString, value; style)
+    x.table[key] = (value, style)
+    return x
+end
+
+function DataAPI.metadata!(x::TestMeta, key::AbstractString, value; style)
+    x.table[key] = (value, style)
+    return x
+end
+
+DataAPI.deletemetadata!(x::TestMeta, key::AbstractString) = delete!(x.table, key)
+DataAPI.emptymetadata!(x::TestMeta) = empty!(x.table)
+
+function DataAPI.colmetadata(x::TestMeta, col::Symbol, key::AbstractString; style::Bool=false)
+    return style ? x.col[col][key] : x.col[col][key][1]
+end
+
+function DataAPI.colmetadatakeys(x::TestMeta, col::Symbol)
+    haskey(x.col, col) && return keys(x.col[col])
+    return ()
+end
+
+function DataAPI.colmetadatakeys(x::TestMeta)
+    isempty(x.col) && return ()
+    return (col => keys(x.col[col]) for col in keys(x.col))
+end
+
+function DataAPI.colmetadata!(x::TestMeta, col::Symbol, key::AbstractString, value; style)
+    if haskey(x.col, col)
+        x.col[col][key] = (value, style)
+    else
+        x.col[col] = Dict{Any, Any}(key => (value, style))
+    end
+    return x
+end
+
+function DataAPI.deletecolmetadata!(x::TestMeta, col::Symbol, key::AbstractString)
+    if haskey(x.col, col)
+        delete!(x.col[col], key)
+    else
+        throw(ArgumentError("column $col not found"))
+    end
+    return x
+end
+
+function DataAPI.emptycolmetadata!(x::TestMeta, col::Symbol)
+    if haskey(x.col, col)
+        delete!(x.col, col)
+    else
+        throw(ArgumentError("column $col not found"))
+    end
+    return x
+end
+
+DataAPI.emptycolmetadata!(x::TestMeta) = empty!(x.col)
+
 @testset "DataAPI" begin
 
 @testset "defaultarray" begin
@@ -171,6 +244,64 @@ end
 @testset "unwrap" begin
     @test DataAPI.unwrap(1) === 1
     @test DataAPI.unwrap(missing) === missing
+end
+
+@testset "metadata" begin
+    @test_throws ArgumentError DataAPI.metadata!(1, "a", 10, style=:default)
+    @test_throws ArgumentError DataAPI.deletemetadata!(1, "a")
+    @test_throws ArgumentError DataAPI.emptymetadata!(1)
+    @test_throws ArgumentError DataAPI.metadata(1, "a")
+    @test_throws ArgumentError DataAPI.metadata(1, "a", style=true)
+    @test DataAPI.metadatakeys(1) == ()
+
+    @test_throws ArgumentError DataAPI.colmetadata!(1, :col, "a", 10, style=:default)
+    @test_throws ArgumentError DataAPI.deletecolmetadata!(1, :col, "a")
+    @test_throws ArgumentError DataAPI.emptycolmetadata!(1, :col)
+    @test_throws ArgumentError DataAPI.deletecolmetadata!(1, 1, "a")
+    @test_throws ArgumentError DataAPI.emptycolmetadata!(1, 1)
+    @test_throws ArgumentError DataAPI.emptycolmetadata!(1)
+    @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a")
+    @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a", style=true)
+    @test_throws ArgumentError DataAPI.colmetadata!(1, 1, "a", 10, style=:default)
+    @test_throws ArgumentError DataAPI.colmetadata(1, 1, "a")
+    @test_throws ArgumentError DataAPI.colmetadata(1, 1, "a", style=true)
+    @test DataAPI.colmetadatakeys(1, :col) == ()
+    @test DataAPI.colmetadatakeys(1, 1) == ()
+    @test DataAPI.colmetadatakeys(1) == ()
+
+    tm = TestMeta()
+    @test isempty(DataAPI.metadatakeys(tm))
+    @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
+    @test collect(DataAPI.metadatakeys(tm)) == ["a"]
+    @test_throws KeyError DataAPI.metadata(tm, "b")
+    @test_throws KeyError DataAPI.metadata(tm, "b", style=true)
+    @test DataAPI.metadata(tm, "a") == "100"
+    @test DataAPI.metadata(tm, "a", style=true) == ("100", :note)
+    DataAPI.deletemetadata!(tm, "a")
+    @test isempty(DataAPI.metadatakeys(tm))
+    @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
+    DataAPI.emptymetadata!(tm)
+    @test isempty(DataAPI.metadatakeys(tm))
+
+    @test DataAPI.colmetadatakeys(tm) == ()
+    @test DataAPI.colmetadatakeys(tm, :col) == ()
+    @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
+    @test [k => collect(v) for  (k, v) in DataAPI.colmetadatakeys(tm)] == [:col => ["a"]]
+    @test collect(DataAPI.colmetadatakeys(tm, :col)) == ["a"]
+    @test_throws KeyError DataAPI.colmetadata(tm, :col, "b")
+    @test_throws KeyError DataAPI.colmetadata(tm, :col, "b", style=true)
+    @test_throws KeyError DataAPI.colmetadata(tm, :col2, "a")
+    @test_throws KeyError DataAPI.colmetadata(tm, :col2, "a", style=true)
+    @test DataAPI.colmetadata(tm, :col, "a") == "100"
+    @test DataAPI.colmetadata(tm, :col, "a", style=true) == ("100", :note)
+    DataAPI.deletecolmetadata!(tm, :col, "a")
+    @test isempty(DataAPI.colmetadatakeys(tm, :col))
+    @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
+    DataAPI.emptycolmetadata!(tm, :col)
+    @test isempty(DataAPI.colmetadatakeys(tm, :col))
+    @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
+    DataAPI.emptycolmetadata!(tm)
+    @test isempty(DataAPI.colmetadatakeys(tm))
 end
 
 end # @testset "DataAPI"

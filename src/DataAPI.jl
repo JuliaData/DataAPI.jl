@@ -287,4 +287,158 @@ using a `sink` function to materialize the table.
 """
 function allcombinations end
 
+const STYLE_INFO = """
+One of the uses of the metadata `style` is decision
+how the metadata should be propagated when `x` is transformed. This interface
+defines the `:default` style that indicates that metadata should not be propagated
+under any operations (it is only preserved when a copy of the source table is
+performed). All types supporting metadata allow at least this style.
+"""
+
+const COL_INFO = """
+`col` must have a type that is supported by table `x` for column indexing.
+Following the Tables.jl contract `Symbol` and `Int` are always allowed.
+Passing `col` that is not a column of `x` throws an error.
+"""
+
+"""
+    metadata(x, key::AbstractString; style::Bool=false)
+
+Return metadata value associated with object `x` for key `key`.
+If `x` does not support metadata throw `ArgumentError`.
+If `x` supports metadata, but does not have a mapping for `key` throw
+`KeyError`.
+
+If `style=true` return a tuple of metadata value and metadata style. Metadata
+style is an additional information about the kind of metadata that is stored
+for the `key`.
+
+$STYLE_INFO
+"""
+metadata(::T, ::AbstractString; style::Bool=false) where {T} =
+    throw(ArgumentError("Objects of type $T do not support getting metadata"))
+
+"""
+    metadatakeys(x)
+
+Return an iterator of metadata keys for which `metadata(x, key)` returns a
+metadata value. If `x` does not support metadata return `()`.
+"""
+metadatakeys(::Any) = ()
+
+"""
+    metadata!(x, key::AbstractString, value; style)
+
+Set metadata for object `x` for key `key` to have value `value`
+and style `style` and return `x`.
+If `x` does not support setting metadata throw `ArgumentError`.
+
+$STYLE_INFO
+"""
+metadata!(::T, ::AbstractString, ::Any; style) where {T} =
+    throw(ArgumentError("Objects of type $T do not support setting metadata"))
+
+"""
+    deletemetadata!(x, key::AbstractString)
+
+Delete metadata for object `x` for key `key` and return `x`
+(if metadata for `key` is not present do not perform any action).
+If `x` does not support metadata deletion throw `ArgumentError`.
+"""
+deletemetadata!(::T, ::AbstractString) where {T} =
+    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+
+"""
+    emptymetadata!(x)
+
+Delete all metadata for object `x`.
+If `x` does not support metadata deletion throw `ArgumentError`.
+"""
+emptymetadata!(::T) where {T} =
+    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+
+"""
+    colmetadata(x, col, key::AbstractString; style::Bool=false)
+
+Return metadata value associated with table `x` for column `col` and key `key`.
+If `x` does not support metadata for column `col` throw `ArgumentError`. If `x`
+supports metadata, but does not have a mapping for column `col` for `key` throw
+`KeyError`.
+
+$COL_INFO
+
+If `style=true` return a tuple of metadata value and metadata style. Metadata
+style is an additional information about the kind of metadata that is stored for
+the `key`.
+
+$STYLE_INFO
+"""
+colmetadata(::T, ::Int, ::AbstractString; style::Bool=false) where {T} =
+    throw(ArgumentError("Objects of type $T do not support getting column metadata"))
+colmetadata(::T, ::Symbol, ::AbstractString; style::Bool=false) where {T} =
+    throw(ArgumentError("Objects of type $T do not support getting column metadata"))
+
+"""
+    colmetadatakeys(x, [col])
+
+If `col` is passed return an iterator of metadata keys for which `metadata(x,
+col, key)` returns a metadata value. If `x` does not support metadata for column
+`col` return `()`.
+
+`col` must have a type that is supported by table `x` for column indexing.
+Following the Tables.jl contract `Symbol` and `Int` are always allowed. Passing
+`col` that is not a column of `x` either throws an error (this is a
+preferred behavior if it is possible) or returns `()` (this duality is allowed
+as some Tables.jl tables do not have a schema).
+
+If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
+pairs for all columns that have metadata, where `col` are `Symbol`.
+If `x` does not support column metadata return `()`.
+"""
+colmetadatakeys(::Any, ::Int) = ()
+colmetadatakeys(::Any, ::Symbol) = ()
+colmetadatakeys(::Any) = ()
+
+"""
+    colmetadata!(x, col, key::AbstractString, value; style)
+
+Set metadata for table `x` for column `col` for key `key` to have value `value`
+and style `style` and return `x`.
+If `x` does not support setting metadata for column `col` throw `ArgumentError`.
+
+$COL_INFO
+
+$STYLE_INFO
+"""
+colmetadata!(::T, ::Int, ::AbstractString, ::Any; style) where {T} =
+    throw(ArgumentError("Objects of type $T do not support setting metadata"))
+colmetadata!(::T, ::Symbol, ::AbstractString, ::Any; style) where {T} =
+    throw(ArgumentError("Objects of type $T do not support setting metadata"))
+
+"""
+    deletecolmetadata!(x, col, key::AbstractString)
+
+Delete metadata for table `x` for column `col` for key `key` and return `x`
+(if metadata for `key` is not present do not perform any action).
+If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
+"""
+deletecolmetadata!(::T, ::Symbol, ::AbstractString) where {T} =
+    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+deletecolmetadata!(::T, ::Int, ::AbstractString) where {T} =
+    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+
+"""
+    emptycolmetadata!(x, [col])
+
+Delete all metadata for table `x` for column `col`.
+If `col` is not passed delete all column level metadata for table `x`.
+If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
+"""
+emptycolmetadata!(::T, ::Symbol) where {T} =
+    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+emptycolmetadata!(::T, ::Int) where {T} =
+    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+emptycolmetadata!(::T) where {T} =
+    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+
 end # module
