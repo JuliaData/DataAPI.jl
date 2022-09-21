@@ -313,10 +313,19 @@ If `style=true` return a tuple of metadata value and metadata style. Metadata
 style is an additional information about the kind of metadata that is stored
 for the `key`.
 
+Types overloading `metadata` must also overload [`hasmetadata`](@ref).
+
 $STYLE_INFO
 """
 metadata(::T, ::AbstractString; style::Bool=false) where {T} =
     throw(ArgumentError("Objects of type $T do not support getting metadata"))
+
+"""
+    hasmetadata(x)
+
+Returns `true` if metadata is associated with `x`.
+"""
+hasmetadata(x) = false
 
 """
     metadatakeys(x)

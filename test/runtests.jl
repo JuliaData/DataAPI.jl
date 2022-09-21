@@ -21,6 +21,8 @@ struct TestMeta
     TestMeta() = new(Dict{String, Any}(), Dict{Symbol, Dict{String, Any}}())
 end
 
+DataAPI.hasmetadata(::TestMeta) = true
+
 function DataAPI.metadata(x::TestMeta, key::AbstractString; style::Bool=false)
     return style ? x.table[key] : x.table[key][1]
 end
@@ -253,6 +255,9 @@ end
     @test_throws ArgumentError DataAPI.metadata(1, "a")
     @test_throws ArgumentError DataAPI.metadata(1, "a", style=true)
     @test DataAPI.metadatakeys(1) == ()
+
+    @test DataAPI.hasmetadata(TestMeta())
+    @test !DataAPI.hasmetadata(1)
 
     @test_throws ArgumentError DataAPI.colmetadata!(1, :col, "a", 10, style=:default)
     @test_throws ArgumentError DataAPI.deletecolmetadata!(1, :col, "a")
