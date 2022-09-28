@@ -305,9 +305,8 @@ Passing `col` that is not a column of `x` throws an error.
     metadata(x, key::AbstractString; style::Bool=false)
 
 Return metadata value associated with object `x` for key `key`.
-If `x` does not support metadata throw `ArgumentError`.
-If `x` supports metadata, but does not have a mapping for `key` throw
-`KeyError`.
+If `x` does not support metadata throw error.
+If `x` supports metadata, but does not have a mapping for `key` throw error.
 
 If `style=true` return a tuple of metadata value and metadata style. Metadata
 style is an additional information about the kind of metadata that is stored
@@ -315,8 +314,7 @@ for the `key`.
 
 $STYLE_INFO
 """
-metadata(::T, ::AbstractString; style::Bool=false) where {T} =
-    throw(ArgumentError("Objects of type $T do not support getting metadata"))
+function metadata end
 
 """
     metadatakeys(x)
@@ -331,39 +329,36 @@ metadatakeys(::Any) = ()
 
 Set metadata for object `x` for key `key` to have value `value`
 and style `style` and return `x`.
-If `x` does not support setting metadata throw `ArgumentError`.
+If `x` does not support setting metadata throw error.
 
 $STYLE_INFO
 """
-metadata!(::T, ::AbstractString, ::Any; style) where {T} =
-    throw(ArgumentError("Objects of type $T do not support setting metadata"))
+function metadata! end
 
 """
     deletemetadata!(x, key::AbstractString)
 
 Delete metadata for object `x` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
-If `x` does not support metadata deletion throw `ArgumentError`.
+If `x` does not support metadata deletion throw error.
 """
-deletemetadata!(::T, ::AbstractString) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+function deletemetadata! end
 
 """
     emptymetadata!(x)
 
 Delete all metadata for object `x`.
-If `x` does not support metadata deletion throw `ArgumentError`.
+If `x` does not support metadata deletion throw error.
 """
-emptymetadata!(::T) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+function emptymetadata! end
 
 """
     colmetadata(x, col, key::AbstractString; style::Bool=false)
 
 Return metadata value associated with table `x` for column `col` and key `key`.
-If `x` does not support metadata for column `col` throw `ArgumentError`. If `x`
+If `x` does not support metadata for column `col` throw error. If `x`
 supports metadata, but does not have a mapping for column `col` for `key` throw
-`KeyError`.
+error.
 
 $COL_INFO
 
@@ -373,10 +368,7 @@ the `key`.
 
 $STYLE_INFO
 """
-colmetadata(::T, ::Int, ::AbstractString; style::Bool=false) where {T} =
-    throw(ArgumentError("Objects of type $T do not support getting column metadata"))
-colmetadata(::T, ::Symbol, ::AbstractString; style::Bool=false) where {T} =
-    throw(ArgumentError("Objects of type $T do not support getting column metadata"))
+function colmetadata end
 
 """
     colmetadatakeys(x, [col])
@@ -404,41 +396,30 @@ colmetadatakeys(::Any) = ()
 
 Set metadata for table `x` for column `col` for key `key` to have value `value`
 and style `style` and return `x`.
-If `x` does not support setting metadata for column `col` throw `ArgumentError`.
+If `x` does not support setting metadata for column `col` throw error.
 
 $COL_INFO
 
 $STYLE_INFO
 """
-colmetadata!(::T, ::Int, ::AbstractString, ::Any; style) where {T} =
-    throw(ArgumentError("Objects of type $T do not support setting metadata"))
-colmetadata!(::T, ::Symbol, ::AbstractString, ::Any; style) where {T} =
-    throw(ArgumentError("Objects of type $T do not support setting metadata"))
+function colmetadata! end
 
 """
     deletecolmetadata!(x, col, key::AbstractString)
 
 Delete metadata for table `x` for column `col` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
-If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
+If `x` does not support metadata deletion for column `col` throw error.
 """
-deletecolmetadata!(::T, ::Symbol, ::AbstractString) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-deletecolmetadata!(::T, ::Int, ::AbstractString) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+function deletecolmetadata! end
 
 """
     emptycolmetadata!(x, [col])
 
 Delete all metadata for table `x` for column `col`.
 If `col` is not passed delete all column level metadata for table `x`.
-If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
+If `x` does not support metadata deletion for column `col` throw error.
 """
-emptycolmetadata!(::T, ::Symbol) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-emptycolmetadata!(::T, ::Int) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-emptycolmetadata!(::T) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+function emptycolmetadata! end
 
 end # module
