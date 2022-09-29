@@ -302,7 +302,7 @@ Passing `col` that is not a column of `x` throws an error.
 """
 
 """
-    metadata(x, key::AbstractString; style::Bool=false)
+    metadata(x, key::AbstractString, [default]; style::Bool=false)
 
 Return metadata value associated with object `x` for key `key`.
 Throw an error if `x` does not support metadata or does not have a mapping for `key`.
@@ -312,6 +312,9 @@ style is an additional information about the kind of metadata that is stored
 for the `key`.
 
 $STYLE_INFO
+
+If `default` is passed then return it if mapping for `key` is missing. If
+`style=true` return `(default, :default)`.
 """
 function metadata end
 
@@ -352,7 +355,7 @@ If `x` does not support metadata deletion throw error.
 function emptymetadata! end
 
 """
-    colmetadata(x, col, key::AbstractString; style::Bool=false)
+    colmetadata(x, col, key::AbstractString, default; style::Bool=false)
 
 Return metadata value associated with table `x` for column `col` and key `key`.
 If `x` does not support metadata for column `col` throw error. If `x`
@@ -366,6 +369,9 @@ style is an additional information about the kind of metadata that is stored for
 the `key`.
 
 $STYLE_INFO
+
+If `default` is passed then return it if mapping for `key` is missing. If
+`style=true` return `(default, :default)`.
 """
 function colmetadata end
 
