@@ -305,8 +305,7 @@ Passing `col` that is not a column of `x` throws an error.
     metadata(x, key::AbstractString; style::Bool=false)
 
 Return metadata value associated with object `x` for key `key`.
-If `x` does not support metadata throw error.
-If `x` supports metadata, but does not have a mapping for `key` throw error.
+Throw an error if `x` does not support metadata or does not have a mapping for `key`.
 
 If `style=true` return a tuple of metadata value and metadata style. Metadata
 style is an additional information about the kind of metadata that is stored
@@ -329,7 +328,7 @@ metadatakeys(::Any) = ()
 
 Set metadata for object `x` for key `key` to have value `value`
 and style `style` and return `x`.
-If `x` does not support setting metadata throw error.
+Throw an error if `x` does not support setting metadata.
 
 $STYLE_INFO
 """
