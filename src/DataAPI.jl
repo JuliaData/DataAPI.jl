@@ -298,29 +298,31 @@ performed). All types supporting metadata allow at least this style.
 const COL_INFO = """
 `col` must have a type that is supported by table `x` for column indexing.
 Following the Tables.jl contract `Symbol` and `Int` are always allowed.
-Throw an error if if `col`is not a column of `x`.
+Throw an error if `col`is not a column of `x`.
 """
 
 """
     metadatasupport(T::Type)
 
-Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` giving information if
-values of type `T` support metadata. The `read` field indicates if
-reading meteadata with the `metadata` and `metadatakeys` functions is supported.
-The `write` field indicates if modifying metadata with the `metadata!`,
-`deletemetadata!`, and `emptymetadata!` functions is supported.
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
+values of type `T` support metadata. The `read` field indicates whether
+reading metadata with the [`metadata`](@ref) and [`metadatakeys`]](@ref)
+functions is supported.
+The `write` field indicates whether modifying metadata with the [`metadata!`](@ref),
+[`deletemetadata!`](@ref), and [`emptymetadata!`](@ref) functions is supported.
 """
 metadatasupport(::Type) = (read=false, write=false)
 
 """
     colmetadatasupport(T::Type)
 
-Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` giving information if
-values of type `T` support column metadata. The `read` field indicates if
-reading column meteadata with the `colmetadata` and `colmetadatakeys` functions
-is supported. The `write` field indicates if modifying metadata with the
-`colmetadata!`, `deletecolmetadata!`, and `emptycolmetadata!` functions is
-supported.
+
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
+values of type `T` support column metadata. The `read` field indicates whether
+reading metadata with the [`colmetadata`](@ref) and [`colmetadatakeys`](@ref)
+functions is supported.
+The `write` field indicates whether modifying metadata with the [`colmetadata!`](@ref),
+[`deletecolmetadata!`](@ref), and [`emptycolmetadata!`](@ref) functions is supported.
 """
 colmetadatasupport(::Type) = (read=false, write=false)
 
@@ -379,7 +381,7 @@ Throw an error if `x` does not support metadata deletion.
 function emptymetadata! end
 
 """
-    colmetadata(x, col, key::AbstractString, default; style::Bool=false)
+    colmetadata(x, col, key::AbstractString, [default]; style::Bool=false)
 
 Return metadata value associated with table `x` for column `col` and key `key`.
 Throw an error if `x` does not support reading metadata for column `col` or `x`
