@@ -298,7 +298,7 @@ performed). All types supporting metadata allow at least this style.
 const COL_INFO = """
 `col` must have a type that is supported by table `x` for column indexing.
 Following the Tables.jl contract `Symbol` and `Int` are always allowed.
-Throw an error if `col`is not a column of `x`.
+Throw an error if `col` is not a column of `x`.
 """
 
 """
