@@ -310,7 +310,7 @@ reading meteadata with the `metadata` and `metadatakeys` functions is supported.
 The `write` field indicates if modifying metadata with the `metadata!`,
 `deletemetadata!`, and `emptymetadata!` functions is supported.
 """
-metadatasupport(::Type) == (read=false, write=false)
+metadatasupport(::Type) = (read=false, write=false)
 
 """
     colmetadatasupport(T::Type)
@@ -322,7 +322,7 @@ is supported. The `write` field indicates if modifying metadata with the
 `colmetadata!`, `deletecolmetadata!`, and `emptycolmetadata!` functions is
 supported.
 """
-colmetadatasupport(::Type) == (read=false, write=false)
+colmetadatasupport(::Type) = (read=false, write=false)
 
 """
     metadata(x, key::AbstractString, [default]; style::Bool=false)
