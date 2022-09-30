@@ -286,8 +286,8 @@ end
     @test DataAPI.colmetadatasupport(Int) == (read=false, write=false)
 
     tm = TestMeta()
-    @test DataAPI.metadatasupport(TestMeta) == (read=false, write=false)
-    @test DataAPI.colmetadatasupport(TestMeta) == (read=false, write=false)
+    @test DataAPI.metadatasupport(TestMeta) == (read=true, write=true)
+    @test DataAPI.colmetadatasupport(TestMeta) == (read=true, write=true)
 
     @test isempty(DataAPI.metadatakeys(tm))
     @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
