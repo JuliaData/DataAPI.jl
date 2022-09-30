@@ -298,23 +298,46 @@ performed). All types supporting metadata allow at least this style.
 const COL_INFO = """
 `col` must have a type that is supported by table `x` for column indexing.
 Following the Tables.jl contract `Symbol` and `Int` are always allowed.
-Passing `col` that is not a column of `x` throws an error.
+Throw an error if if `col`is not a column of `x`.
 """
+
+"""
+    metadatasupport(T::Type)
+
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` giving information if
+values of type `T` support metadata. The `read` field indicates if
+reading meteadata with the `metadata` and `metadatakeys` functions is supported.
+The `write` field indicates if modifying metadata with the `metadata!`,
+`deletemetadata!`, and `emptymetadata!` functions is supported.
+"""
+metadatasupport(::Type) == (read=false, write=false)
+
+"""
+    colmetadatasupport(T::Type)
+
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` giving information if
+values of type `T` support column metadata. The `read` field indicates if
+reading column meteadata with the `colmetadata` and `colmetadatakeys` functions
+is supported. The `write` field indicates if modifying metadata with the
+`colmetadata!`, `deletecolmetadata!`, and `emptycolmetadata!` functions is
+supported.
+"""
+colmetadatasupport(::Type) == (read=false, write=false)
 
 """
     metadata(x, key::AbstractString, [default]; style::Bool=false)
 
-Return metadata value associated with object `x` for key `key`.
-Throw an error if `x` does not support metadata or does not have a mapping for `key`.
+Return metadata value associated with object `x` for key `key`. Throw an error
+if `x` does not support reading metadata or does not have a mapping for `key`.
 
 If `style=true` return a tuple of metadata value and metadata style. Metadata
-style is an additional information about the kind of metadata that is stored
-for the `key`.
+style is an additional information about the kind of metadata that is stored for
+the `key`.
 
 $STYLE_INFO
 
-If `default` is passed then return it if mapping for `key` is missing. If
-`style=true` return `(default, :default)`.
+If `default` is passed then return it if reading metadata is supported but
+mapping for `key` is missing. If `style=true` return `(default, :default)`.
 """
 function metadata end
 
@@ -322,9 +345,10 @@ function metadata end
     metadatakeys(x)
 
 Return an iterator of metadata keys for which `metadata(x, key)` returns a
-metadata value. If `x` does not support metadata return `()`.
+metadata value.
+Throw an error if `x` does not support reading metadata.
 """
-metadatakeys(::Any) = ()
+function metadatakeys end
 
 """
     metadata!(x, key::AbstractString, value; style)
@@ -342,7 +366,7 @@ function metadata! end
 
 Delete metadata for object `x` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
-If `x` does not support metadata deletion throw error.
+Throw an error if `x` does not support metadata deletion.
 """
 function deletemetadata! end
 
@@ -350,7 +374,7 @@ function deletemetadata! end
     emptymetadata!(x)
 
 Delete all metadata for object `x`.
-If `x` does not support metadata deletion throw error.
+Throw an error if `x` does not support metadata deletion.
 """
 function emptymetadata! end
 
@@ -358,9 +382,8 @@ function emptymetadata! end
     colmetadata(x, col, key::AbstractString, default; style::Bool=false)
 
 Return metadata value associated with table `x` for column `col` and key `key`.
-If `x` does not support metadata for column `col` throw error. If `x`
-supports metadata, but does not have a mapping for column `col` for `key` throw
-error.
+Throw an error if `x` does not support reading metadata for column `col` or `x`
+supports reading metadata, but does not have a mapping for column `col` for `key`.
 
 $COL_INFO
 
@@ -370,38 +393,34 @@ the `key`.
 
 $STYLE_INFO
 
-If `default` is passed then return it if mapping for `key` is missing. If
-`style=true` return `(default, :default)`.
+If `default` is passed then return it if `x` supports reading metadata and has
+column `col` but mapping for `key` is missing.
+If `style=true` return `(default, :default)`.
 """
 function colmetadata end
 
 """
     colmetadatakeys(x, [col])
 
-If `col` is passed return an iterator of metadata keys for which `metadata(x,
-col, key)` returns a metadata value. If `x` does not support metadata for column
-`col` return `()`.
+If `col` is passed return an iterator of metadata keys for which
+`metadata(x, col, key)` returns a metadata value. Throw an error if `x` does not
+support reading column metadata or if `col` is not a column of `x`.
 
 `col` must have a type that is supported by table `x` for column indexing.
-Following the Tables.jl contract `Symbol` and `Int` are always allowed. Passing
-`col` that is not a column of `x` either throws an error (this is a
-preferred behavior if it is possible) or returns `()` (this duality is allowed
-as some Tables.jl tables do not have a schema).
+Following the Tables.jl contract `Symbol` and `Int` are always allowed.
 
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
 pairs for all columns that have metadata, where `col` are `Symbol`.
 If `x` does not support column metadata return `()`.
 """
-colmetadatakeys(::Any, ::Int) = ()
-colmetadatakeys(::Any, ::Symbol) = ()
-colmetadatakeys(::Any) = ()
+function colmetadatakeys end
 
 """
     colmetadata!(x, col, key::AbstractString, value; style)
 
 Set metadata for table `x` for column `col` for key `key` to have value `value`
 and style `style` and return `x`.
-If `x` does not support setting metadata for column `col` throw error.
+Throw an error if `x` does not support setting metadata for column `col`.
 
 $COL_INFO
 
@@ -414,7 +433,7 @@ function colmetadata! end
 
 Delete metadata for table `x` for column `col` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
-If `x` does not support metadata deletion for column `col` throw error.
+Throw an error if `x` does not support metadata deletion for column `col`.
 """
 function deletecolmetadata! end
 
@@ -423,7 +442,7 @@ function deletecolmetadata! end
 
 Delete all metadata for table `x` for column `col`.
 If `col` is not passed delete all column level metadata for table `x`.
-If `x` does not support metadata deletion for column `col` throw error.
+Throw an error if `x` does not support metadata deletion for column `col`.
 """
 function emptycolmetadata! end
 
