@@ -298,72 +298,97 @@ performed). All types supporting metadata allow at least this style.
 const COL_INFO = """
 `col` must have a type that is supported by table `x` for column indexing.
 Following the Tables.jl contract `Symbol` and `Int` are always allowed.
-Passing `col` that is not a column of `x` throws an error.
+Throw an error if `col` is not a column of `x`.
 """
 
 """
-    metadata(x, key::AbstractString; style::Bool=false)
+    metadatasupport(T::Type)
 
-Return metadata value associated with object `x` for key `key`.
-If `x` does not support metadata throw `ArgumentError`.
-If `x` supports metadata, but does not have a mapping for `key` throw
-`KeyError`.
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
+values of type `T` support metadata.
+
+The `read` field indicates whether reading metadata with the [`metadata`](@ref)
+and [`metadatakeys`]](@ref) functions is supported.
+
+The `write` field indicates whether modifying metadata with the [`metadata!`](@ref),
+[`deletemetadata!`](@ref), and [`emptymetadata!`](@ref) functions is supported.
+"""
+metadatasupport(::Type) = (read=false, write=false)
+
+"""
+    colmetadatasupport(T::Type)
+
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
+values of type `T` support column metadata.
+
+The `read` field indicates whether reading metadata with the [`colmetadata`](@ref)
+and [`colmetadatakeys`](@ref) functions is supported.
+
+The `write` field indicates whether modifying metadata with the [`colmetadata!`](@ref),
+[`deletecolmetadata!`](@ref), and [`emptycolmetadata!`](@ref) functions is supported.
+"""
+colmetadatasupport(::Type) = (read=false, write=false)
+
+"""
+    metadata(x, key::AbstractString, [default]; style::Bool=false)
+
+Return metadata value associated with object `x` for key `key`. Throw an error
+if `x` does not support reading metadata or does not have a mapping for `key`.
 
 If `style=true` return a tuple of metadata value and metadata style. Metadata
-style is an additional information about the kind of metadata that is stored
-for the `key`.
+style is an additional information about the kind of metadata that is stored for
+the `key`.
 
 $STYLE_INFO
+
+If `default` is passed then return it if reading metadata is supported but
+mapping for `key` is missing. If `style=true` return `(default, :default)`.
 """
-metadata(::T, ::AbstractString; style::Bool=false) where {T} =
-    throw(ArgumentError("Objects of type $T do not support getting metadata"))
+function metadata end
 
 """
     metadatakeys(x)
 
 Return an iterator of metadata keys for which `metadata(x, key)` returns a
-metadata value. If `x` does not support metadata return `()`.
+metadata value.
+Throw an error if `x` does not support reading metadata.
 """
-metadatakeys(::Any) = ()
+function metadatakeys end
 
 """
     metadata!(x, key::AbstractString, value; style)
 
 Set metadata for object `x` for key `key` to have value `value`
 and style `style` and return `x`.
-If `x` does not support setting metadata throw `ArgumentError`.
+Throw an error if `x` does not support setting metadata.
 
 $STYLE_INFO
 """
-metadata!(::T, ::AbstractString, ::Any; style) where {T} =
-    throw(ArgumentError("Objects of type $T do not support setting metadata"))
+function metadata! end
 
 """
     deletemetadata!(x, key::AbstractString)
 
 Delete metadata for object `x` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
-If `x` does not support metadata deletion throw `ArgumentError`.
+Throw an error if `x` does not support metadata deletion.
 """
-deletemetadata!(::T, ::AbstractString) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+function deletemetadata! end
 
 """
     emptymetadata!(x)
 
 Delete all metadata for object `x`.
-If `x` does not support metadata deletion throw `ArgumentError`.
+Throw an error if `x` does not support metadata deletion.
 """
-emptymetadata!(::T) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+function emptymetadata! end
 
 """
-    colmetadata(x, col, key::AbstractString; style::Bool=false)
+    colmetadata(x, col, key::AbstractString, [default]; style::Bool=false)
 
 Return metadata value associated with table `x` for column `col` and key `key`.
-If `x` does not support metadata for column `col` throw `ArgumentError`. If `x`
-supports metadata, but does not have a mapping for column `col` for `key` throw
-`KeyError`.
+Throw an error if `x` does not support reading metadata for column `col` or `x`
+supports reading metadata, but does not have a mapping for column `col` for `key`.
 
 $COL_INFO
 
@@ -372,73 +397,58 @@ style is an additional information about the kind of metadata that is stored for
 the `key`.
 
 $STYLE_INFO
+
+If `default` is passed then return it if `x` supports reading metadata and has
+column `col` but mapping for `key` is missing.
+If `style=true` return `(default, :default)`.
 """
-colmetadata(::T, ::Int, ::AbstractString; style::Bool=false) where {T} =
-    throw(ArgumentError("Objects of type $T do not support getting column metadata"))
-colmetadata(::T, ::Symbol, ::AbstractString; style::Bool=false) where {T} =
-    throw(ArgumentError("Objects of type $T do not support getting column metadata"))
+function colmetadata end
 
 """
     colmetadatakeys(x, [col])
 
-If `col` is passed return an iterator of metadata keys for which `metadata(x,
-col, key)` returns a metadata value. If `x` does not support metadata for column
-`col` return `()`.
+If `col` is passed return an iterator of metadata keys for which
+`metadata(x, col, key)` returns a metadata value. Throw an error if `x` does not
+support reading column metadata or if `col` is not a column of `x`.
 
 `col` must have a type that is supported by table `x` for column indexing.
-Following the Tables.jl contract `Symbol` and `Int` are always allowed. Passing
-`col` that is not a column of `x` either throws an error (this is a
-preferred behavior if it is possible) or returns `()` (this duality is allowed
-as some Tables.jl tables do not have a schema).
+Following the Tables.jl contract `Symbol` and `Int` are always allowed.
 
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
 pairs for all columns that have metadata, where `col` are `Symbol`.
 If `x` does not support column metadata return `()`.
 """
-colmetadatakeys(::Any, ::Int) = ()
-colmetadatakeys(::Any, ::Symbol) = ()
-colmetadatakeys(::Any) = ()
+function colmetadatakeys end
 
 """
     colmetadata!(x, col, key::AbstractString, value; style)
 
 Set metadata for table `x` for column `col` for key `key` to have value `value`
 and style `style` and return `x`.
-If `x` does not support setting metadata for column `col` throw `ArgumentError`.
+Throw an error if `x` does not support setting metadata for column `col`.
 
 $COL_INFO
 
 $STYLE_INFO
 """
-colmetadata!(::T, ::Int, ::AbstractString, ::Any; style) where {T} =
-    throw(ArgumentError("Objects of type $T do not support setting metadata"))
-colmetadata!(::T, ::Symbol, ::AbstractString, ::Any; style) where {T} =
-    throw(ArgumentError("Objects of type $T do not support setting metadata"))
+function colmetadata! end
 
 """
     deletecolmetadata!(x, col, key::AbstractString)
 
 Delete metadata for table `x` for column `col` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
-If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
+Throw an error if `x` does not support metadata deletion for column `col`.
 """
-deletecolmetadata!(::T, ::Symbol, ::AbstractString) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-deletecolmetadata!(::T, ::Int, ::AbstractString) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+function deletecolmetadata! end
 
 """
     emptycolmetadata!(x, [col])
 
 Delete all metadata for table `x` for column `col`.
 If `col` is not passed delete all column level metadata for table `x`.
-If `x` does not support metadata deletion for column `col` throw `ArgumentError`.
+Throw an error if `x` does not support metadata deletion for column `col`.
 """
-emptycolmetadata!(::T, ::Symbol) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-emptycolmetadata!(::T, ::Int) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
-emptycolmetadata!(::T) where {T} =
-    throw(ArgumentError("Objects of type $T do not support metadata deletion"))
+function emptycolmetadata! end
 
 end # module

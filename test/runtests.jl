@@ -21,8 +21,16 @@ struct TestMeta
     TestMeta() = new(Dict{String, Any}(), Dict{Symbol, Dict{String, Any}}())
 end
 
+DataAPI.metadatasupport(::Type{TestMeta}) = (read=true, write=true)
+DataAPI.colmetadatasupport(::Type{TestMeta}) = (read=true, write=true)
+
 function DataAPI.metadata(x::TestMeta, key::AbstractString; style::Bool=false)
     return style ? x.table[key] : x.table[key][1]
+end
+
+function DataAPI.metadata(x::TestMeta, key::AbstractString, default; style::Bool=false)
+    haskey(x.table, key) && return DataAPI.metadata(x, key, style=style)
+    return style ? (default, :default) : default
 end
 
 DataAPI.metadatakeys(x::TestMeta) = keys(x.table)
@@ -42,6 +50,11 @@ DataAPI.emptymetadata!(x::TestMeta) = empty!(x.table)
 
 function DataAPI.colmetadata(x::TestMeta, col::Symbol, key::AbstractString; style::Bool=false)
     return style ? x.col[col][key] : x.col[col][key][1]
+end
+
+function DataAPI.colmetadata(x::TestMeta, col::Symbol, key::AbstractString, default; style::Bool=false)
+    haskey(x.table, col) && haskey(x.table[col], key) && return DataAPI.metadata(x, key, style=style)
+    return style ? (default, :default) : default
 end
 
 function DataAPI.colmetadatakeys(x::TestMeta, col::Symbol)
@@ -247,34 +260,42 @@ end
 end
 
 @testset "metadata" begin
-    @test_throws ArgumentError DataAPI.metadata!(1, "a", 10, style=:default)
-    @test_throws ArgumentError DataAPI.deletemetadata!(1, "a")
-    @test_throws ArgumentError DataAPI.emptymetadata!(1)
-    @test_throws ArgumentError DataAPI.metadata(1, "a")
-    @test_throws ArgumentError DataAPI.metadata(1, "a", style=true)
-    @test DataAPI.metadatakeys(1) == ()
+    @test_throws MethodError DataAPI.metadata!(1, "a", 10, style=:default)
+    @test_throws MethodError DataAPI.deletemetadata!(1, "a")
+    @test_throws MethodError DataAPI.emptymetadata!(1)
+    @test_throws MethodError DataAPI.metadata(1, "a")
+    @test_throws MethodError DataAPI.metadata(1, "a", style=true)
+    @test_throws MethodError DataAPI.metadatakeys(1)
 
-    @test_throws ArgumentError DataAPI.colmetadata!(1, :col, "a", 10, style=:default)
-    @test_throws ArgumentError DataAPI.deletecolmetadata!(1, :col, "a")
-    @test_throws ArgumentError DataAPI.emptycolmetadata!(1, :col)
-    @test_throws ArgumentError DataAPI.deletecolmetadata!(1, 1, "a")
-    @test_throws ArgumentError DataAPI.emptycolmetadata!(1, 1)
-    @test_throws ArgumentError DataAPI.emptycolmetadata!(1)
-    @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a")
-    @test_throws ArgumentError DataAPI.colmetadata(1, :col, "a", style=true)
-    @test_throws ArgumentError DataAPI.colmetadata!(1, 1, "a", 10, style=:default)
-    @test_throws ArgumentError DataAPI.colmetadata(1, 1, "a")
-    @test_throws ArgumentError DataAPI.colmetadata(1, 1, "a", style=true)
-    @test DataAPI.colmetadatakeys(1, :col) == ()
-    @test DataAPI.colmetadatakeys(1, 1) == ()
-    @test DataAPI.colmetadatakeys(1) == ()
+    @test_throws MethodError DataAPI.colmetadata!(1, :col, "a", 10, style=:default)
+    @test_throws MethodError DataAPI.deletecolmetadata!(1, :col, "a")
+    @test_throws MethodError DataAPI.emptycolmetadata!(1, :col)
+    @test_throws MethodError DataAPI.deletecolmetadata!(1, 1, "a")
+    @test_throws MethodError DataAPI.emptycolmetadata!(1, 1)
+    @test_throws MethodError DataAPI.emptycolmetadata!(1)
+    @test_throws MethodError DataAPI.colmetadata(1, :col, "a")
+    @test_throws MethodError DataAPI.colmetadata(1, :col, "a", style=true)
+    @test_throws MethodError DataAPI.colmetadata!(1, 1, "a", 10, style=:default)
+    @test_throws MethodError DataAPI.colmetadata(1, 1, "a")
+    @test_throws MethodError DataAPI.colmetadata(1, 1, "a", style=true)
+    @test_throws MethodError DataAPI.colmetadatakeys(1, :col)
+    @test_throws MethodError DataAPI.colmetadatakeys(1, 1)
+    @test_throws MethodError DataAPI.colmetadatakeys(1)
+
+    @test DataAPI.metadatasupport(Int) == (read=false, write=false)
+    @test DataAPI.colmetadatasupport(Int) == (read=false, write=false)
 
     tm = TestMeta()
+    @test DataAPI.metadatasupport(TestMeta) == (read=true, write=true)
+    @test DataAPI.colmetadatasupport(TestMeta) == (read=true, write=true)
+
     @test isempty(DataAPI.metadatakeys(tm))
     @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
     @test collect(DataAPI.metadatakeys(tm)) == ["a"]
     @test_throws KeyError DataAPI.metadata(tm, "b")
+    @test DataAPI.metadata(tm, "b", 123) == 123
     @test_throws KeyError DataAPI.metadata(tm, "b", style=true)
+    @test DataAPI.metadata(tm, "b", 123, style=true) == (123, :default)
     @test DataAPI.metadata(tm, "a") == "100"
     @test DataAPI.metadata(tm, "a", style=true) == ("100", :note)
     DataAPI.deletemetadata!(tm, "a")
@@ -289,7 +310,9 @@ end
     @test [k => collect(v) for  (k, v) in DataAPI.colmetadatakeys(tm)] == [:col => ["a"]]
     @test collect(DataAPI.colmetadatakeys(tm, :col)) == ["a"]
     @test_throws KeyError DataAPI.colmetadata(tm, :col, "b")
+    @test DataAPI.colmetadata(tm, :col, "b", 123) == 123
     @test_throws KeyError DataAPI.colmetadata(tm, :col, "b", style=true)
+    @test DataAPI.colmetadata(tm, :col, "b", 123, style=true) == (123, :default)
     @test_throws KeyError DataAPI.colmetadata(tm, :col2, "a")
     @test_throws KeyError DataAPI.colmetadata(tm, :col2, "a", style=true)
     @test DataAPI.colmetadata(tm, :col, "a") == "100"
