@@ -330,7 +330,7 @@ The `write` field indicates whether modifying metadata with the [`colmetadata!`]
 colmetadatasupport(::Type) = (read=false, write=false)
 
 """
-    metadata(x, key::AbstractString, [default]; style::Bool=false)
+    metadata(x, [key::AbstractString], [default]; style::Bool=false)
 
 Return metadata value associated with object `x` for key `key`. Throw an error
 if `x` does not support reading metadata or does not have a mapping for `key`.
@@ -343,6 +343,9 @@ $STYLE_INFO
 
 If `default` is passed then return it if reading metadata is supported but
 mapping for `key` is missing. If `style=true` return `(default, :default)`.
+
+If `key` is not passed return a dictionary mapping all metadata keys to
+metadata values associated with object `x`.
 """
 function metadata end
 
@@ -356,10 +359,10 @@ Throw an error if `x` does not support reading metadata.
 function metadatakeys end
 
 """
-    metadata!(x, key::AbstractString, value; style)
+    metadata!(x, key::AbstractString, value; style::Symbol=:default)
 
 Set metadata for object `x` for key `key` to have value `value`
-and style `style` and return `x`.
+and style `style` (`:default` by default) and return `x`.
 Throw an error if `x` does not support setting metadata.
 
 $STYLE_INFO
@@ -384,7 +387,7 @@ Throw an error if `x` does not support metadata deletion.
 function emptymetadata! end
 
 """
-    colmetadata(x, col, key::AbstractString, [default]; style::Bool=false)
+    colmetadata(x, [col], [key::AbstractString], [default]; style::Bool=false)
 
 Return metadata value associated with table `x` for column `col` and key `key`.
 Throw an error if `x` does not support reading metadata for column `col` or `x`
@@ -401,6 +404,13 @@ $STYLE_INFO
 If `default` is passed then return it if `x` supports reading metadata and has
 column `col` but mapping for `key` is missing.
 If `style=true` return `(default, :default)`.
+
+If `key` is not passed return a dictionary mapping all metadata keys to
+metadata values associated with table `x` for column `col`.
+
+If `col` is not passed return a dictionary mapping columns represented as
+`Symbol` that have associated metadata to dictionaries dictionary mapping all
+metadata keys to metadata values associated with table `x` for a given column.
 """
 function colmetadata end
 
@@ -421,10 +431,10 @@ If `x` does not support column metadata return `()`.
 function colmetadatakeys end
 
 """
-    colmetadata!(x, col, key::AbstractString, value; style)
+    colmetadata!(x, col, key::AbstractString, value; style::Symbol=:default)
 
 Set metadata for table `x` for column `col` for key `key` to have value `value`
-and style `style` and return `x`.
+and style `style` (`:default` by default) and return `x`.
 Throw an error if `x` does not support setting metadata for column `col`.
 
 $COL_INFO
