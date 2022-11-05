@@ -359,7 +359,7 @@ the `key`.
 $STYLE_INFO
 
 The returned dictionary may be freshly allocated on each call to `metadata` and
-is considered to be owned by `x` so it should be only used for reading data.
+is considered to be owned by `x` so it must not be modified.
 """
 function metadata(x::T; style::Bool=false) where {T}
     if !metadatasupport(T).read
@@ -440,12 +440,11 @@ the `key`.
 $STYLE_INFO
 
 If `col` is not passed return a dictionary mapping columns represented as
-`Symbol` that have associated metadata to dictionaries dictionary mapping all
+`Symbol` that have associated metadata to dictionaries mapping all
 metadata keys to metadata values associated with table `x` for a given column.
 
 The returned dictionary may be freshly allocated on each call to `colmetadata`
-and is considered to be owned by `x` so it should be only used for reading
-data.
+and is considered to be owned by `x` so it must not be modified.
 """
 function colmetadata(x::T, col; style::Bool=false) where {T}
     if !colmetadatasupport(T).read
