@@ -1,5 +1,4 @@
 using Test, DataAPI
-import DataFrames
 
 const ≅ = isequal
 
@@ -328,41 +327,44 @@ end
     @test isempty(DataAPI.colmetadatakeys(tm))
 end
 
-@testset "fallback definitions of metadata and colmetadata" begin
-    df = DataFrames.DataFrame()
-    @test DataAPI.metadata(df) == Dict()
-    @test DataAPI.metadata(df, style=true) == Dict()
-    @test DataAPI.colmetadata(df) == Dict()
-    @test DataAPI.colmetadata(df, style=true) == Dict()
-    df.a = 1:2
-    df.b = 2:3
-    df.c = 3:4
-    @test DataAPI.metadata(df) == Dict()
-    @test DataAPI.metadata(df, style=true) == Dict()
-    @test DataAPI.colmetadata(df) == Dict()
-    @test DataAPI.colmetadata(df, style=true) == Dict()
-    DataAPI.metadata!(df, "a1", "b1", style=:default)
-    DataAPI.metadata!(df, "a2", "b2", style=:note)
-    DataAPI.colmetadata!(df, :a, "x1", "y1", style=:default)
-    DataAPI.colmetadata!(df, :a, "x2", "y2", style=:note)
-    DataAPI.colmetadata!(df, :c, "x3", "y3", style=:note)
-    @test DataAPI.metadata(df) == Dict("a1" => "b1", "a2" => "b2")
-    @test DataAPI.metadata(df, style=true) == Dict("a1" => ("b1", :default),
-                                                   "a2" => ("b2", :note))
-    @test DataAPI.colmetadata(df) == Dict(:a => Dict("x1" => "y1",
-                                                     "x2" => "y2"),
-                                          :c => Dict("x3" => "y3"))
-    @test DataAPI.colmetadata(df, style=true) == Dict(:a => Dict("x1" => ("y1", :default),
-                                                                 "x2" => ("y2", :note)),
-                                                      :c => Dict("x3" => ("y3", :note)))
-    @test DataAPI.colmetadata(df, :a) == Dict("x1" => "y1",
-                                              "x2" => "y2")
-    @test DataAPI.colmetadata(df, :a, style=true) == Dict("x1" => ("y1", :default),
-                                                          "x2" => ("y2", :note))
-    @test DataAPI.colmetadata(df, :b) == Dict()
-    @test DataAPI.colmetadata(df, :b, style=true) == Dict()
-    @test DataAPI.colmetadata(df, :c) == Dict("x3" => "y3")
-    @test DataAPI.colmetadata(df, :c, style=true) == Dict("x3" => ("y3", :note))
+if VERSION >= v"1.6"
+    import DataFrames
+    @testset "fallback definitions of metadata and colmetadata" begin
+        df = DataFrames.DataFrame()
+        @test DataAPI.metadata(df) == Dict()
+        @test DataAPI.metadata(df, style=true) == Dict()
+        @test DataAPI.colmetadata(df) == Dict()
+        @test DataAPI.colmetadata(df, style=true) == Dict()
+        df.a = 1:2
+        df.b = 2:3
+        df.c = 3:4
+        @test DataAPI.metadata(df) == Dict()
+        @test DataAPI.metadata(df, style=true) == Dict()
+        @test DataAPI.colmetadata(df) == Dict()
+        @test DataAPI.colmetadata(df, style=true) == Dict()
+        DataAPI.metadata!(df, "a1", "b1", style=:default)
+        DataAPI.metadata!(df, "a2", "b2", style=:note)
+        DataAPI.colmetadata!(df, :a, "x1", "y1", style=:default)
+        DataAPI.colmetadata!(df, :a, "x2", "y2", style=:note)
+        DataAPI.colmetadata!(df, :c, "x3", "y3", style=:note)
+        @test DataAPI.metadata(df) == Dict("a1" => "b1", "a2" => "b2")
+        @test DataAPI.metadata(df, style=true) == Dict("a1" => ("b1", :default),
+                                                       "a2" => ("b2", :note))
+        @test DataAPI.colmetadata(df) == Dict(:a => Dict("x1" => "y1",
+                                                         "x2" => "y2"),
+                                              :c => Dict("x3" => "y3"))
+        @test DataAPI.colmetadata(df, style=true) == Dict(:a => Dict("x1" => ("y1", :default),
+                                                                     "x2" => ("y2", :note)),
+                                                          :c => Dict("x3" => ("y3", :note)))
+        @test DataAPI.colmetadata(df, :a) == Dict("x1" => "y1",
+                                                  "x2" => "y2")
+        @test DataAPI.colmetadata(df, :a, style=true) == Dict("x1" => ("y1", :default),
+                                                              "x2" => ("y2", :note))
+        @test DataAPI.colmetadata(df, :b) == Dict()
+        @test DataAPI.colmetadata(df, :b, style=true) == Dict()
+        @test DataAPI.colmetadata(df, :c) == Dict("x3" => "y3")
+        @test DataAPI.colmetadata(df, :c, style=true) == Dict("x3" => ("y3", :note))
+    end
 end
 
 end # @testset "DataAPI"
