@@ -433,7 +433,7 @@ If `col` is not passed return a dictionary mapping columns represented as
 `Symbol` that have associated metadata to dictionaries mapping all
 metadata keys to metadata values associated with table `x` for a given column.
 
-If `col` is passed a dictionary mapping all column metadata keys to metadata values
+If `col` is passed return a dictionary mapping all column metadata keys to metadata values
 associated with column `col` of table `x`. Throw an error if `x` does not
 support reading metadata for column `col` or column `col` is not present in `x`.
 
