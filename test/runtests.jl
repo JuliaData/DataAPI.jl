@@ -35,12 +35,7 @@ end
 
 DataAPI.metadatakeys(x::TestMeta) = keys(x.table)
 
-function DataAPI.metadata!(x::TestMeta, key::AbstractString, value; style)
-    x.table[key] = (value, style)
-    return x
-end
-
-function DataAPI.metadata!(x::TestMeta, key::AbstractString, value; style)
+function DataAPI.metadata!(x::TestMeta, key::AbstractString, value; style::Symbol=:default)
     x.table[key] = (value, style)
     return x
 end
@@ -52,7 +47,8 @@ function DataAPI.colmetadata(x::TestMeta, col::Symbol, key::AbstractString; styl
     return style ? x.col[col][key] : x.col[col][key][1]
 end
 
-function DataAPI.colmetadata(x::TestMeta, col::Symbol, key::AbstractString, default; style::Bool=false)
+function DataAPI.colmetadata(x::TestMeta, col::Symbol, key::AbstractString, default;
+                             style::Bool=false)
     haskey(x.table, col) && haskey(x.table[col], key) && return DataAPI.metadata(x, key, style=style)
     return style ? (default, :default) : default
 end
@@ -67,7 +63,8 @@ function DataAPI.colmetadatakeys(x::TestMeta)
     return (col => keys(x.col[col]) for col in keys(x.col))
 end
 
-function DataAPI.colmetadata!(x::TestMeta, col::Symbol, key::AbstractString, value; style)
+function DataAPI.colmetadata!(x::TestMeta, col::Symbol, key::AbstractString, value;
+                              style::Symbol=:default)
     if haskey(x.col, col)
         x.col[col][key] = (value, style)
     else
@@ -264,7 +261,9 @@ end
     @test_throws MethodError DataAPI.deletemetadata!(1, "a")
     @test_throws MethodError DataAPI.emptymetadata!(1)
     @test_throws MethodError DataAPI.metadata(1, "a")
+    @test_throws ArgumentError DataAPI.metadata(1)
     @test_throws MethodError DataAPI.metadata(1, "a", style=true)
+    @test_throws ArgumentError DataAPI.metadata(1, style=true)
     @test_throws MethodError DataAPI.metadatakeys(1)
 
     @test_throws MethodError DataAPI.colmetadata!(1, :col, "a", 10, style=:default)
@@ -274,7 +273,11 @@ end
     @test_throws MethodError DataAPI.emptycolmetadata!(1, 1)
     @test_throws MethodError DataAPI.emptycolmetadata!(1)
     @test_throws MethodError DataAPI.colmetadata(1, :col, "a")
+    @test_throws ArgumentError DataAPI.colmetadata(1, :col)
+    @test_throws ArgumentError DataAPI.colmetadata(1)
     @test_throws MethodError DataAPI.colmetadata(1, :col, "a", style=true)
+    @test_throws ArgumentError DataAPI.colmetadata(1, :col, style=true)
+    @test_throws ArgumentError DataAPI.colmetadata(1, style=true)
     @test_throws MethodError DataAPI.colmetadata!(1, 1, "a", 10, style=:default)
     @test_throws MethodError DataAPI.colmetadata(1, 1, "a")
     @test_throws MethodError DataAPI.colmetadata(1, 1, "a", style=true)
@@ -290,6 +293,8 @@ end
     @test DataAPI.colmetadatasupport(TestMeta) == (read=true, write=true)
 
     @test isempty(DataAPI.metadatakeys(tm))
+    @test DataAPI.metadata(tm) == Dict()
+    @test DataAPI.metadata(tm, style=true) == Dict()
     @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
     @test collect(DataAPI.metadatakeys(tm)) == ["a"]
     @test_throws KeyError DataAPI.metadata(tm, "b")
@@ -297,7 +302,9 @@ end
     @test_throws KeyError DataAPI.metadata(tm, "b", style=true)
     @test DataAPI.metadata(tm, "b", 123, style=true) == (123, :default)
     @test DataAPI.metadata(tm, "a") == "100"
+    @test DataAPI.metadata(tm) == Dict("a" => "100")
     @test DataAPI.metadata(tm, "a", style=true) == ("100", :note)
+    @test DataAPI.metadata(tm, style=true) == Dict("a" => ("100", :note))
     DataAPI.deletemetadata!(tm, "a")
     @test isempty(DataAPI.metadatakeys(tm))
     @test DataAPI.metadata!(tm, "a", "100", style=:note) == tm
@@ -306,6 +313,7 @@ end
 
     @test DataAPI.colmetadatakeys(tm) == ()
     @test DataAPI.colmetadatakeys(tm, :col) == ()
+    @test DataAPI.colmetadata(tm) == Dict()
     @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
     @test [k => collect(v) for  (k, v) in DataAPI.colmetadatakeys(tm)] == [:col => ["a"]]
     @test collect(DataAPI.colmetadatakeys(tm, :col)) == ["a"]
@@ -316,7 +324,11 @@ end
     @test_throws KeyError DataAPI.colmetadata(tm, :col2, "a")
     @test_throws KeyError DataAPI.colmetadata(tm, :col2, "a", style=true)
     @test DataAPI.colmetadata(tm, :col, "a") == "100"
+    @test DataAPI.colmetadata(tm, :col) == Dict("a" => "100")
+    @test DataAPI.colmetadata(tm) == Dict(:col => Dict("a" => "100"))
     @test DataAPI.colmetadata(tm, :col, "a", style=true) == ("100", :note)
+    @test DataAPI.colmetadata(tm, :col, style=true) == Dict("a" => ("100", :note))
+    @test DataAPI.colmetadata(tm, style=true) == Dict(:col => Dict("a" => ("100", :note)))
     DataAPI.deletecolmetadata!(tm, :col, "a")
     @test isempty(DataAPI.colmetadatakeys(tm, :col))
     @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
@@ -325,46 +337,6 @@ end
     @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
     DataAPI.emptycolmetadata!(tm)
     @test isempty(DataAPI.colmetadatakeys(tm))
-end
-
-if VERSION >= v"1.6"
-    import DataFrames
-    @testset "fallback definitions of metadata and colmetadata" begin
-        df = DataFrames.DataFrame()
-        @test DataAPI.metadata(df) == Dict()
-        @test DataAPI.metadata(df, style=true) == Dict()
-        @test DataAPI.colmetadata(df) == Dict()
-        @test DataAPI.colmetadata(df, style=true) == Dict()
-        df.a = 1:2
-        df.b = 2:3
-        df.c = 3:4
-        @test DataAPI.metadata(df) == Dict()
-        @test DataAPI.metadata(df, style=true) == Dict()
-        @test DataAPI.colmetadata(df) == Dict()
-        @test DataAPI.colmetadata(df, style=true) == Dict()
-        DataAPI.metadata!(df, "a1", "b1", style=:default)
-        DataAPI.metadata!(df, "a2", "b2", style=:note)
-        DataAPI.colmetadata!(df, :a, "x1", "y1", style=:default)
-        DataAPI.colmetadata!(df, :a, "x2", "y2", style=:note)
-        DataAPI.colmetadata!(df, :c, "x3", "y3", style=:note)
-        @test DataAPI.metadata(df) == Dict("a1" => "b1", "a2" => "b2")
-        @test DataAPI.metadata(df, style=true) == Dict("a1" => ("b1", :default),
-                                                       "a2" => ("b2", :note))
-        @test DataAPI.colmetadata(df) == Dict(:a => Dict("x1" => "y1",
-                                                         "x2" => "y2"),
-                                              :c => Dict("x3" => "y3"))
-        @test DataAPI.colmetadata(df, style=true) == Dict(:a => Dict("x1" => ("y1", :default),
-                                                                     "x2" => ("y2", :note)),
-                                                          :c => Dict("x3" => ("y3", :note)))
-        @test DataAPI.colmetadata(df, :a) == Dict("x1" => "y1",
-                                                  "x2" => "y2")
-        @test DataAPI.colmetadata(df, :a, style=true) == Dict("x1" => ("y1", :default),
-                                                              "x2" => ("y2", :note))
-        @test DataAPI.colmetadata(df, :b) == Dict()
-        @test DataAPI.colmetadata(df, :b, style=true) == Dict()
-        @test DataAPI.colmetadata(df, :c) == Dict("x3" => "y3")
-        @test DataAPI.colmetadata(df, :c, style=true) == Dict("x3" => ("y3", :note))
-    end
 end
 
 end # @testset "DataAPI"
