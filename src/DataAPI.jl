@@ -347,6 +347,28 @@ mapping for `key` is missing. If `style=true` return `(default, :default)`.
 function metadata end
 
 """
+    metadata(x; style::Bool=false)
+
+Return a dictionary mapping all metadata keys to metadata values associated
+with object `x`. Throw an error if `x` does not support reading metadata.
+
+If `style=true` values are tuples of metadata value and metadata style. Metadata
+style is an additional information about the kind of metadata that is stored for
+the `key`.
+
+$STYLE_INFO
+
+The returned dictionary may be freshly allocated on each call to `metadata` and
+is considered to be owned by `x` so it must not be modified.
+"""
+function metadata(x::T; style::Bool=false) where {T}
+    if !metadatasupport(T).read
+        throw(ArgumentError("Objects of type $T do not support reading metadata"))
+    end
+    return Dict(key => metadata(x, key, style=style) for key in metadatakeys(x))
+end
+
+"""
     metadatakeys(x)
 
 Return an iterator of metadata keys for which `metadata(x, key)` returns a
@@ -356,10 +378,10 @@ Throw an error if `x` does not support reading metadata.
 function metadatakeys end
 
 """
-    metadata!(x, key::AbstractString, value; style)
+    metadata!(x, key::AbstractString, value; style::Symbol=:default)
 
 Set metadata for object `x` for key `key` to have value `value`
-and style `style` and return `x`.
+and style `style` (`:default` by default) and return `x`.
 Throw an error if `x` does not support setting metadata.
 
 $STYLE_INFO
@@ -405,6 +427,41 @@ If `style=true` return `(default, :default)`.
 function colmetadata end
 
 """
+    colmetadata(x, [col]; style::Bool=false)
+
+If `col` is not passed return a dictionary mapping columns represented as
+`Symbol` that have associated metadata to dictionaries mapping all
+metadata keys to metadata values associated with table `x` for a given column.
+
+If `col` is passed return a dictionary mapping all column metadata keys to metadata values
+associated with column `col` of table `x`. Throw an error if `x` does not
+support reading metadata for column `col` or column `col` is not present in `x`.
+
+If `style=true` values are tuples of metadata value and metadata style. Metadata
+style is an additional information about the kind of metadata that is stored for
+the `key`.
+
+$STYLE_INFO
+
+The returned dictionary may be freshly allocated on each call to `colmetadata`
+and is considered to be owned by `x` so it must not be modified.
+"""
+function colmetadata(x::T, col; style::Bool=false) where {T}
+    if !colmetadatasupport(T).read
+        throw(ArgumentError("Objects of type $T do not support reading column metadata"))
+    end
+    return Dict(key => colmetadata(x, col, key, style=style) for key in colmetadatakeys(x, col))
+end
+
+function colmetadata(x::T; style::Bool=false) where {T}
+    if !colmetadatasupport(T).read
+        throw(ArgumentError("Objects of type $T do not support reading column metadata"))
+    end
+    return Dict(col => Dict(key => colmetadata(x, col, key, style=style) for key in keys)
+                for (col, keys) in colmetadatakeys(x))
+end
+
+"""
     colmetadatakeys(x, [col])
 
 If `col` is passed return an iterator of metadata keys for which
@@ -421,10 +478,10 @@ If `x` does not support column metadata return `()`.
 function colmetadatakeys end
 
 """
-    colmetadata!(x, col, key::AbstractString, value; style)
+    colmetadata!(x, col, key::AbstractString, value; style::Symbol=:default)
 
 Set metadata for table `x` for column `col` for key `key` to have value `value`
-and style `style` and return `x`.
+and style `style` (`:default` by default) and return `x`.
 Throw an error if `x` does not support setting metadata for column `col`.
 
 $COL_INFO
