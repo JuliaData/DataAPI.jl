@@ -183,9 +183,9 @@ Between(x::Union{Int, Symbol}, y::AbstractString) = Between(x, Symbol(y))
 Between(x::AbstractString, y::Union{Int, Symbol}) = Between(Symbol(x), y)
 
 """
-    All(cols...)
+    All()
 
-Select the union of the selections in `cols`. If `cols == ()`, select all columns.
+Select all columns.
 """
 struct All{T<:Tuple}
     cols::T
@@ -198,17 +198,27 @@ struct All{T<:Tuple}
 end
 
 """
-    Cols(cols...)
-    Cols(f::Function)
+    Cols(cols...; operation::Symbol=:union)
+    Cols(f::Function; operation::Symbol=:union)
 
-Select the union of the selections in `cols`. If `cols == ()`, select no columns.
+Select a union of the selections in `cols`. If `cols == ()`, select no columns.
 
 If the only positional argument is a `Function` `f` then select the columns whose
 names passed to the `f` predicate as strings return `true`.
+
+If `operation` keyword argument is passed then it can be either `:union` (the default)
+or `:intersect`. If it is `:intersect` then an intersection of the selections
+in `cols` is selected.
 """
 struct Cols{T<:Tuple}
     cols::T
-    Cols(args...) = new{typeof(args)}(args)
+    operation::Symbol
+    function Cols(args...; operation::Symbol=:union)
+        if !(operation == :union || operation == :intersect)
+            throw(ArgumentError("operation must be `:union` or `:intersect`"))
+        end
+        return new{typeof(args)}(args, operation)
+    end
 end
 
 """
