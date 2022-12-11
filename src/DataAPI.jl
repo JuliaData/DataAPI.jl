@@ -198,26 +198,24 @@ struct All{T<:Tuple}
 end
 
 """
-    Cols(cols...; operation::Symbol=:union)
-    Cols(f::Function; operation::Symbol=:union)
+    Cols(cols...; operation=union)
+    Cols(f::Function; operation=union)
 
 Select columns matching specifications in `cols`. If `cols == ()`, select no columns.
 
 If the only positional argument is a `Function` `f` then select the columns whose
 names passed to the `f` predicate as strings return `true`.
 
-When multiple `cols` selectors are passed,  if `operation=:union` (the default)
-all columns matching at least one selector are returned, and if
-`operation=:intersect` only columns matching all selectors are returned.
+When multiple `cols` selectors are passed then the sets of columns selected by them
+are passed to `operation` callable as positional arguments.
+`operation` should be a set operation function, like `union`, `intersect`, `setdiff`, and `symdiff`
+defined in Base Julia. By default `operation=union` in which case all columns matching
+at least one selector are returned.
 """
 struct Cols{T<:Tuple}
     cols::T
-    operation::Symbol
-    function Cols(args...; operation::Symbol=:union)
-        if !(operation == :union || operation == :intersect)
-            throw(ArgumentError("operation must be `:union` or `:intersect`"))
-        end
-        return new{typeof(args)}(args, operation)
+    operation
+    Cols(args...; operation::Symbol=union) = new{typeof(args)}(args, operation)
     end
 end
 
