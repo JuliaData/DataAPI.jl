@@ -215,7 +215,7 @@ at least one selector are returned.
 struct Cols{T<:Tuple}
     cols::T
     operation
-    Cols(args...; operation::Symbol=union) = new{typeof(args)}(args, operation)
+    Cols(args...; operation=union) = new{typeof(args)}(args, operation)
 end
 
 """
