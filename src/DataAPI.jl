@@ -216,7 +216,6 @@ struct Cols{T<:Tuple}
     cols::T
     operation
     Cols(args...; operation::Symbol=union) = new{typeof(args)}(args, operation)
-    end
 end
 
 """
