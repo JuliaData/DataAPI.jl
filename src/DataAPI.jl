@@ -201,14 +201,14 @@ end
     Cols(cols...; operation::Symbol=:union)
     Cols(f::Function; operation::Symbol=:union)
 
-Select a union of the selections in `cols`. If `cols == ()`, select no columns.
+Select columns matching specifications in `cols`. If `cols == ()`, select no columns.
 
 If the only positional argument is a `Function` `f` then select the columns whose
 names passed to the `f` predicate as strings return `true`.
 
-If `operation` keyword argument is passed then it can be either `:union` (the default)
-or `:intersect`. If it is `:intersect` then an intersection of the selections
-in `cols` is selected.
+When multiple `cols` selectors are passed,  if `operation=:union` (the default)
+all columns matching at least one selector are returned, and if
+`operation=:intersect` only columns matching all selectors are returned.
 """
 struct Cols{T<:Tuple}
     cols::T
