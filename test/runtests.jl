@@ -249,6 +249,8 @@ end
             (Ref(DataAPI.BroadcastedSelector(v())) .=> [sum, float])
     end
 
+    @test DataAPI.Cols(:a, operator=union).operator == union
+    @test DataAPI.Cols(:a, operator=intersect).operator == intersect
 end
 
 @testset "unwrap" begin
