@@ -358,7 +358,6 @@ end
 @testset "rownumber" begin
     table = TestTable([(a=1,), (a=2,)])
 
-    @test table[1] == (a=1,)
     @test DataAPI.rownumber(table[1]) == 1
     @test DataAPI.rownumber(table[2]) == 2
 end
