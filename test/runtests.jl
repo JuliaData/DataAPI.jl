@@ -93,6 +93,20 @@ end
 
 DataAPI.emptycolmetadata!(x::TestMeta) = empty!(x.col)
 
+# An example implementation of a table (without the Tables.jl interface)
+# for testing DataAPI.rownumber
+struct TestTable{T}
+    source::AbstractVector{T}
+end
+
+struct TestRow
+    source::TestTable
+    row::Int
+end
+
+Base.getindex(table::TestTable, row) = TestRow(table, row)
+DataAPI.rownumber(row::TestRow) = getfield(row, :row)
+
 @testset "DataAPI" begin
 
 @testset "defaultarray" begin
@@ -339,6 +353,13 @@ end
     @test DataAPI.colmetadata!(tm, :col, "a", "100", style=:note) == tm
     DataAPI.emptycolmetadata!(tm)
     @test isempty(DataAPI.colmetadatakeys(tm))
+end
+
+@testset "rownumber" begin
+    table = TestTable([(a=1,), (a=2,)])
+
+    @test DataAPI.rownumber(table[1]) == 1
+    @test DataAPI.rownumber(table[2]) == 2
 end
 
 end # @testset "DataAPI"

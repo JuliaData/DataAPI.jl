@@ -515,4 +515,11 @@ Throw an error if `x` does not support metadata deletion for column `col`.
 """
 function emptycolmetadata! end
 
+"""
+    rownumber(row)
+
+Return the row number of `row` in the source table.
+"""
+function rownumber end
+
 end # module
