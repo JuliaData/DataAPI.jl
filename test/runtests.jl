@@ -27,7 +27,7 @@ end
 DataAPI.metadatasupport(::Type{TestMeta}) = (read=true, write=true)
 DataAPI.colmetadatasupport(::Type{TestMeta}) = (read=true, write=true)
 function DataAPI.dimmetadatasupport(::Type{TestMeta}, dim::Int)
-    if dim === 1 || dim === 2
+    if dim == 1 || dim == 2
         (read=true, write=true)
     else
         (read=false, write=false)
