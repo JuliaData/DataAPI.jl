@@ -409,7 +409,6 @@ end
     DataAPI.emptycolmetadata!(tm)
     @test isempty(DataAPI.colmetadatakeys(tm))
 
-    dim = 1
     @test isempty(DataAPI.dimmetadatakeys(tm, dim))
     @test DataAPI.dimmetadata(tm, dim) == Dict()
     @test DataAPI.dimmetadata(tm, dim, style=true) == Dict()
