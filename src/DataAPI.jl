@@ -532,7 +532,7 @@ dimmetadatasupport(::Type, i::Int) = (read=false, write=false)
 """
     dimmetadata(x, dim::Int, key::AbstractString, [default]; style::Bool=false)
 
-Return metadata value associated with `x` at dimension `dim` and key `key`.
+Return metadata value associated with `x` for dimension `dim` and key `key`.
 Throw an error if `x` does not support reading metadata for dimension `dim` or `x`
 supports reading metadata, but does not have a mapping for dimension `dim` for `key`.
 
@@ -581,8 +581,8 @@ function dimmetadatakeys end
 """
     dimmetadata!(x, dim::Int, key::AbstractString, value; style::Symbol=:default)
 
-Set the metadata value and style associated with `x` at dimension `dim` for key `key` to `value`
-and `style`, respectively. (`:default` by default) and return `x`.
+Set metadata for `x` for dimension `dim` for key `key` to have value `value`
+and style `style` (`:default` by default) and return `x`.
 Throw an error if `x` does not support setting metadata for dimension `dim`.
 
 $STYLE_INFO
