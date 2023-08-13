@@ -343,15 +343,14 @@ end
     @test_throws MethodError DataAPI.colmetadatakeys(1, 1)
     @test_throws MethodError DataAPI.colmetadatakeys(1)
 
-    dim = 1
-    @test_throws MethodError DataAPI.dimmetadata!(1, dim, "a", 10, style=:default)
-    @test_throws MethodError DataAPI.deletedimmetadata!(1, dim, "a")
-    @test_throws MethodError DataAPI.emptydimmetadata!(1, dim)
-    @test_throws MethodError DataAPI.dimmetadata(1, dim, "a")
-    @test_throws ArgumentError DataAPI.dimmetadata(1, dim)
-    @test_throws MethodError DataAPI.dimmetadata(1, dim, "a", style=true)
-    @test_throws ArgumentError DataAPI.dimmetadata(1, dim, style=true)
-    @test_throws MethodError DataAPI.dimmetadatakeys(1, dim)
+    @test_throws MethodError DataAPI.dimmetadata!(1, 1, "a", 10, style=:default)
+    @test_throws MethodError DataAPI.deletedimmetadata!(1, 1, "a")
+    @test_throws MethodError DataAPI.emptydimmetadata!(1, 1)
+    @test_throws MethodError DataAPI.dimmetadata(1, 1, "a")
+    @test_throws ArgumentError DataAPI.dimmetadata(1, 1)
+    @test_throws MethodError DataAPI.dimmetadata(1, 1, "a", style=true)
+    @test_throws ArgumentError DataAPI.dimmetadata(1, 1, style=true)
+    @test_throws MethodError DataAPI.dimmetadatakeys(1, 1)
 
     @test DataAPI.metadatasupport(Int) == (read=false, write=false)
     @test DataAPI.colmetadatasupport(Int) == (read=false, write=false)
@@ -409,24 +408,24 @@ end
     DataAPI.emptycolmetadata!(tm)
     @test isempty(DataAPI.colmetadatakeys(tm))
 
-    @test isempty(DataAPI.dimmetadatakeys(tm, dim))
-    @test DataAPI.dimmetadata(tm, dim) == Dict()
-    @test DataAPI.dimmetadata(tm, dim, style=true) == Dict()
-    @test DataAPI.dimmetadata!(tm, dim, "a", "100", style=:note) == tm
-    @test collect(DataAPI.dimmetadatakeys(tm, dim)) == ["a"]
-    @test_throws KeyError DataAPI.dimmetadata(tm, dim, "b")
-    @test DataAPI.dimmetadata(tm, dim, "b", 123) == 123
-    @test_throws KeyError DataAPI.dimmetadata(tm, dim, "b", style=true)
-    @test DataAPI.dimmetadata(tm, dim, "b", 123, style=true) == (123, :default)
-    @test DataAPI.dimmetadata(tm, dim, "a") == "100"
-    @test DataAPI.dimmetadata(tm, dim) == Dict("a" => "100")
-    @test DataAPI.dimmetadata(tm, dim, "a", style=true) == ("100", :note)
-    @test DataAPI.dimmetadata(tm, dim, style=true) == Dict("a" => ("100", :note))
-    DataAPI.deletedimmetadata!(tm, dim, "a")
-    @test isempty(DataAPI.dimmetadatakeys(tm, dim))
-    @test DataAPI.dimmetadata!(tm, dim, "a", "100", style=:note) == tm
-    DataAPI.emptydimmetadata!(tm, dim)
-    @test isempty(DataAPI.dimmetadatakeys(tm, dim))
+    @test isempty(DataAPI.dimmetadatakeys(tm, 1))
+    @test DataAPI.dimmetadata(tm, 1) == Dict()
+    @test DataAPI.dimmetadata(tm, 1, style=true) == Dict()
+    @test DataAPI.dimmetadata!(tm, 1, "a", "100", style=:note) == tm
+    @test collect(DataAPI.dimmetadatakeys(tm, 1)) == ["a"]
+    @test_throws KeyError DataAPI.dimmetadata(tm, 1, "b")
+    @test DataAPI.dimmetadata(tm, 1, "b", 123) == 123
+    @test_throws KeyError DataAPI.dimmetadata(tm, 1, "b", style=true)
+    @test DataAPI.dimmetadata(tm, 1, "b", 123, style=true) == (123, :default)
+    @test DataAPI.dimmetadata(tm, 1, "a") == "100"
+    @test DataAPI.dimmetadata(tm, 1) == Dict("a" => "100")
+    @test DataAPI.dimmetadata(tm, 1, "a", style=true) == ("100", :note)
+    @test DataAPI.dimmetadata(tm, 1, style=true) == Dict("a" => ("100", :note))
+    DataAPI.deletedimmetadata!(tm, 1, "a")
+    @test isempty(DataAPI.dimmetadatakeys(tm, 1))
+    @test DataAPI.dimmetadata!(tm, 1, "a", "100", style=:note) == tm
+    DataAPI.emptydimmetadata!(tm, 1)
+    @test isempty(DataAPI.dimmetadatakeys(tm, 1))
 end
 
 @testset "rownumber" begin
