@@ -23,6 +23,7 @@ struct TestMeta
         new(Dict{String, Any}(), Dict{Symbol, Dict{String, Any}}(), (Dict{String, Any}(), Dict{String, Any}()))
     end
 end
+Base.ndims(::TestMeta) = 2
 
 DataAPI.metadatasupport(::Type{TestMeta}) = (read=true, write=true)
 DataAPI.colmetadatasupport(::Type{TestMeta}) = (read=true, write=true)
@@ -350,7 +351,6 @@ end
     @test_throws ArgumentError DataAPI.dimmetadata(1, 1)
     @test_throws MethodError DataAPI.dimmetadata(1, 1, "a", style=true)
     @test_throws ArgumentError DataAPI.dimmetadata(1, 1, style=true)
-    @test_throws MethodError DataAPI.dimmetadatakeys(1, 1)
 
     @test DataAPI.metadatasupport(Int) == (read=false, write=false)
     @test DataAPI.colmetadatasupport(Int) == (read=false, write=false)
@@ -409,7 +409,9 @@ end
     @test isempty(DataAPI.colmetadatakeys(tm))
 
     @test isempty(DataAPI.dimmetadatakeys(tm, 1))
+    @test isempty(DataAPI.dimmetadatakeys(tm)[1])
     @test DataAPI.dimmetadata(tm, 1) == Dict()
+    @test DataAPI.dimmetadata(tm) == (Dict(), Dict())
     @test DataAPI.dimmetadata(tm, 1, style=true) == Dict()
     @test DataAPI.dimmetadata!(tm, 1, "a", "100", style=:note) == tm
     @test collect(DataAPI.dimmetadatakeys(tm, 1)) == ["a"]
@@ -419,6 +421,7 @@ end
     @test DataAPI.dimmetadata(tm, 1, "b", 123, style=true) == (123, :default)
     @test DataAPI.dimmetadata(tm, 1, "a") == "100"
     @test DataAPI.dimmetadata(tm, 1) == Dict("a" => "100")
+    @test DataAPI.dimmetadata(tm)[1] == Dict("a" => "100")
     @test DataAPI.dimmetadata(tm, 1, "a", style=true) == ("100", :note)
     @test DataAPI.dimmetadata(tm, 1, style=true) == Dict("a" => ("100", :note))
     DataAPI.deletedimmetadata!(tm, 1, "a")

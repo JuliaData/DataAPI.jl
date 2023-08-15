@@ -551,7 +551,9 @@ function dimmetadata end
 """
     dimmetadata(x, dim::Int; style::Bool=false)
 
-Return a dictionary of metadata corresponding to dimension `dim` of object `x`.
+Return a dictionary of metadata corresponding to dimension `dim` of object `x`. If `dim`
+ is not passed return a collection mapping each dimension to its metadata so that
+`collection[dim][key] == dimmetadata(x, dim, key)`.
 Throw an error if `x` does not support reading metadata corresponding to dimension `dim`.
 
 If `style=true` values are tuples of metadata value and metadata style. Metadata
@@ -560,7 +562,7 @@ the `key`.
 
 $STYLE_INFO
 
-The returned dictionary may be freshly allocated on each call to `metadata` and
+The returned dictionary may be freshly allocated on each call to `dimmetadata` and
 is considered to be owned by `x` so it must not be modified.
 """
 function dimmetadata(x::T, dim::Int; style::Bool=false) where {T}
@@ -568,6 +570,9 @@ function dimmetadata(x::T, dim::Int; style::Bool=false) where {T}
         throw(ArgumentError("Objects of type $T do not support reading dimension metadata"))
     end
     return Dict(key => dimmetadata(x, dim, key, style=style) for key in dimmetadatakeys(x, dim))
+end
+function dimmetadata(x::T; style::Bool=false) where {T}
+    Tuple(dimmetadata(x, dim; style=style) for dim in 1:ndims(x))
 end
 
 """
@@ -581,7 +586,13 @@ If `dim` is not passed return an iterator of `dim => dimmetadatakeys(x, dim)`
 pairs for all dimensions that have metadata.
 If `x` does not support dimension metadata return `()`.
 """
-function dimmetadatakeys end
+function dimmetadatakeys(x, dim::Int)
+    dimmetadatasupport(typeof(x), dim).read || return ()
+    throw(MethodError(dimmetadatakeys, (x, dim)))
+end
+function dimmetadatakeys(x)
+    Dict(dim => dimmetadatakeys(x, dim) for dim in 1:ndims(x))
+end
 
 """
     dimmetadata!(x, dim::Int, key::AbstractString, value; style::Symbol=:default)
