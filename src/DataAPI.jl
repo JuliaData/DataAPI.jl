@@ -472,7 +472,7 @@ end
     colmetadatakeys(x, [col])
 
 If `col` is passed return an iterator of metadata keys for which
-`metadata(x, col, key)` returns a metadata value. Throw an error if `x` does not
+`colmetadata(x, col, key)` returns a metadata value. Throw an error if `x` does not
 support reading column metadata or if `col` is not a column of `x`.
 
 `col` must have a type that is supported by table `x` for column indexing.
@@ -574,10 +574,10 @@ end
     dimmetadatakeys(x, [dim::Int])
 
 If `dim` is passed return an iterator of metadata keys for which
-`metadata(x, dim, key)` returns a metadata value. Throw an error if `x` does not
-support reading column metadata or if `dim` is not a dimension of `x`.
+`dimmetadata(x, dim, key)` returns a metadata value. Throw an error if `x` does not
+support reading dimension metadata or if `dim` is not a dimension of `x`.
 
-If `dim` is not passed return an iterator of `dim => colmetadatakeys(x, dim)`
+If `dim` is not passed return an iterator of `dim => dimmetadatakeys(x, dim)`
 pairs for all dimensions that have metadata.
 If `x` does not support dimension metadata return `()`.
 """
