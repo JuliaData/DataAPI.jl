@@ -562,7 +562,7 @@ the `key`.
 
 $STYLE_INFO
 
-The returned dictionary may be freshly allocated on each call to `dimmetadata` and
+The returned object may be freshly allocated on each call to `dimmetadata` and
 is considered to be owned by `x` so it must not be modified.
 """
 function dimmetadata(x::T, dim::Int; style::Bool=false) where {T}
