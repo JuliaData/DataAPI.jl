@@ -608,7 +608,7 @@ function dimmetadata! end
 """
     deletedimmetadata!(x, dim::Int, key::AbstractString)
 
-Delete metadata for corresponding to dimension `dim` and key `key` of `x` and return `x`
+Delete metadata corresponding to dimension `dim` of `x` for key `key` and return `x`
 (if metadata for `key` is not present do not perform any action).
 Throw an error if `x` does not support metadata deletion for dimension `dim`.
 """
