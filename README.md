@@ -18,4 +18,4 @@ Packages wishing to extend a function defined in DataAPI.jl should first take a 
 *Users* of functions defined in DataAPI.jl should be aware that taking a dependency on DataAPI.jl itself is not encouraged, since it exists to coordinate inter-package function sharing, and not to provide any functionality. To actually *use* functions defined in DataAPI.jl, please review which package "owns" the function, and take a dependency on it, to ensure the default definitions are available, with additional methods being available as non-owning packages are loaded which extend the function defined in DataAPI.jl.
 
 ### DataAPI.jl Functions
-As this package is developer-focused, please see the [source code](https://github.com/JuliaData/DataAPI.jl/blob/master/src/DataAPI.jl) directly for additional information on current functions defined and their documentation.
+As this package is developer-focused, please see the [source code](https://github.com/JuliaData/DataAPI.jl/blob/main/src/DataAPI.jl) directly for additional information on current functions defined and their documentation.
