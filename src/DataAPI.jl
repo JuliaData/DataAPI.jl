@@ -480,7 +480,9 @@ Following the Tables.jl contract `Symbol` and `Int` are always allowed.
 
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
 pairs for all columns that have metadata, where `col` are `Symbol`.
-If `x` does not support column metadata return `()`.
+
+If `colmetadatasupport(typeof(x)).read` or `colmetadatasupport(typeof(x)).write` return `true`
+this should also be defined.
 """
 function colmetadatakeys end
 
@@ -584,15 +586,11 @@ support reading dimension metadata or if `dim` is not a dimension of `x`.
 
 If `dim` is not passed return an iterator of `dim => dimmetadatakeys(x, dim)`
 pairs for all dimensions that have metadata.
-If `x` does not support dimension metadata return `()`.
+
+If `dimmetadatasupport(typeof(x)).read` or `dimmetadatasupport(typeof(x)).write` return `true`
+this should also be defined.
 """
-function dimmetadatakeys(x, dim::Int)
-    dimmetadatasupport(typeof(x), dim).read || return ()
-    throw(MethodError(dimmetadatakeys, (x, dim)))
-end
-function dimmetadatakeys(x)
-    Dict(dim => dimmetadatakeys(x, dim) for dim in 1:ndims(x))
-end
+function dimmetadatakeys end
 
 """
     dimmetadata!(x, dim::Int, key::AbstractString, value; style::Symbol=:default)
