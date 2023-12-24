@@ -551,7 +551,7 @@ If `style=true` return `(default, :default)`.
 function dimmetadata end
 
 """
-    dimmetadata(x, dim::Int; style::Bool=false)
+    dimmetadata(x, [dim::Int]; style::Bool=false)
 
 Return a dictionary of metadata corresponding to dimension `dim` of object `x`. If `dim`
  is not passed return a collection mapping each dimension to its metadata so that
