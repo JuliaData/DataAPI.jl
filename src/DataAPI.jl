@@ -623,6 +623,7 @@ function deletedimmetadata! end
     emptydimmetadata!(x, dim::Int)
 
 Delete all metadata for object `x` for to dimension `dim` and return `x`.
+If `dim` is not passed delete all dimension level metadata for table `x`.
 Throw an error if `x` does not support metadata deletion for dimension `dim`.
 """
 function emptydimmetadata! end
