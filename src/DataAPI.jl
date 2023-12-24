@@ -482,8 +482,8 @@ If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
 pairs for all columns that have metadata, where `col` are `Symbol`.
 If `x` does not support column metadata return `()`.
 
-If `colmetadatasupport(typeof(x)).read` or `colmetadatasupport(typeof(x)).write` return `true`
-this should also be defined.
+This method must be defined if `dimmetadatasupport(typeof(x)).read` or
+`dimmetadatasupport(typeof(x)).write` return `true`.
 """
 function colmetadatakeys end
 
