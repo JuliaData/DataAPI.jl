@@ -323,20 +323,6 @@ The `write` field indicates whether modifying metadata with the [`metadata!`](@r
 metadatasupport(::Type) = (read=false, write=false)
 
 """
-    colmetadatasupport(T::Type)
-
-Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
-values of type `T` support column metadata.
-
-The `read` field indicates whether reading metadata with the [`colmetadata`](@ref)
-and [`colmetadatakeys`](@ref) functions is supported.
-
-The `write` field indicates whether modifying metadata with the [`colmetadata!`](@ref),
-[`deletecolmetadata!`](@ref), and [`emptycolmetadata!`](@ref) functions is supported.
-"""
-colmetadatasupport(::Type) = (read=false, write=false)
-
-"""
     metadata(x, key::AbstractString, [default]; style::Bool=false)
 
 Return metadata value associated with object `x` for key `key`. Throw an error
@@ -416,6 +402,20 @@ Throw an error if `x` does not support metadata deletion.
 function emptymetadata! end
 
 """
+    colmetadatasupport(T::Type)
+
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
+values of type `T` support column metadata.
+
+The `read` field indicates whether reading metadata with the [`colmetadata`](@ref)
+and [`colmetadatakeys`](@ref) functions is supported.
+
+The `write` field indicates whether modifying metadata with the [`colmetadata!`](@ref),
+[`deletecolmetadata!`](@ref), and [`emptycolmetadata!`](@ref) functions is supported.
+"""
+colmetadatasupport(::Type) = (read=false, write=false)
+
+"""
     colmetadata(x, col, key::AbstractString, [default]; style::Bool=false)
 
 Return metadata value associated with table `x` for column `col` and key `key`.
@@ -485,8 +485,8 @@ If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
 pairs for all columns that have metadata, where `col` are `Symbol`.
 If `x` does not support column metadata return `()`.
 
-This method must be defined if `dimmetadatasupport(typeof(x)).read` or
-`dimmetadatasupport(typeof(x)).write` return `true`.
+This method must be defined if `colmetadatasupport(typeof(x)).read` or
+`colmetadatasupport(typeof(x)).write` return `true`.
 """
 function colmetadatakeys end
 
