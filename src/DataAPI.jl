@@ -535,7 +535,7 @@ dimmetadatasupport(::Type, i::Int) = (read=false, write=false)
 """
     dimmetadata(x, dim::Int, key::AbstractString, [default]; style::Bool=false)
 
-Return metadata value associated with `x` for dimension `dim` and key `key`.
+Return metadata value associated with object `x` for dimension `dim` and key `key`.
 Throw an error if `x` does not support reading metadata for dimension `dim` or `x`
 supports reading metadata, but does not have a mapping for dimension `dim` for `key`.
 
