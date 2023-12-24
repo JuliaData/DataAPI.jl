@@ -554,9 +554,14 @@ function dimmetadata end
 """
     dimmetadata(x, [dim::Int]; style::Bool=false)
 
-Return a dictionary of metadata corresponding to dimension `dim` of object `x`. If `dim`
- is not passed return a collection mapping each dimension to its metadata so that
-`collection[dim][key] == dimmetadata(x, dim, key)`.
+If `dim` is not passed, return a dictionary mapping dimensions that have
+associated metadata to dictionaries mapping all metadata keys to metadata
+values associated with object `x` for a given dimension, so that
+`colmetadata(x)[dim][key] == dimmetadata(x, dim, key)`.
+
+If `dim` is passed return a dictionary mapping all column metadata keys
+to metadata values associated with dimension `dim` of object `x`, so that
+`colmetadata(x, dim)[key] == dimmetadata(x, dim, key)`.
 Throw an error if `x` does not support reading metadata corresponding to dimension `dim`.
 
 If `style=true` values are tuples of metadata value and metadata style. Metadata
