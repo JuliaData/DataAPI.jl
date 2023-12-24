@@ -562,7 +562,8 @@ values associated with object `x` for a given dimension, so that
 If `dim` is passed return a dictionary mapping all column metadata keys
 to metadata values associated with dimension `dim` of object `x`, so that
 `colmetadata(x, dim)[key] == dimmetadata(x, dim, key)`.
-Throw an error if `x` does not support reading metadata corresponding to dimension `dim`.
+Throw an error if `x` does not support reading metadata for dimension `dim`
+or `dim` is not dimension of `x`.
 
 If `style=true` values are tuples of metadata value and metadata style. Metadata
 style is an additional information about the kind of metadata that is stored for
