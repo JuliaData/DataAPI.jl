@@ -594,8 +594,8 @@ support reading dimension metadata or if `dim` is not a dimension of `x`.
 If `dim` is not passed return an iterator of `dim => dimmetadatakeys(x, dim)`
 pairs for all dimensions that have metadata.
 
-If `dimmetadatasupport(typeof(x)).read` or `dimmetadatasupport(typeof(x)).write` return `true`
-this should also be defined.
+This method must be defined if `dimmetadatasupport(typeof(x)).read` or
+`dimmetadatasupport(typeof(x)).write` return `true`.
 """
 function dimmetadatakeys end
 
