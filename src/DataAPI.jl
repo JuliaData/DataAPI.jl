@@ -381,6 +381,9 @@ end
 Return an iterator of metadata keys for which `metadata(x, key)` returns a
 metadata value.
 Throw an error if `x` does not support reading metadata.
+
+If `metadatasupport(typeof(x)).read` or `metadatasupport(typeof(x)).write` return `true`
+this should also be defined.
 """
 function metadatakeys end
 
