@@ -573,7 +573,7 @@ function dimmetadata(x::T, dim::Int; style::Bool=false) where {T}
     end
     return Dict(key => dimmetadata(x, dim, key, style=style) for key in dimmetadatakeys(x, dim))
 end
-function dimmetadata(x::T; style::Bool=false) where {T}
+function dimmetadata(x; style::Bool=false)
     Tuple(dimmetadata(x, dim; style=style) for dim in 1:ndims(x))
 end
 
