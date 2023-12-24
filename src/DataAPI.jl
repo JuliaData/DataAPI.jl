@@ -602,7 +602,7 @@ function dimmetadatakeys end
 """
     dimmetadata!(x, dim::Int, key::AbstractString, value; style::Symbol=:default)
 
-Set metadata for `x` for dimension `dim` for key `key` to have value `value`
+Set metadata for object `x` for dimension `dim` for key `key` to have value `value`
 and style `style` (`:default` by default) and return `x`.
 Throw an error if `x` does not support setting metadata for dimension `dim`.
 
