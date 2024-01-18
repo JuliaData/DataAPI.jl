@@ -522,4 +522,14 @@ Return the row number of `row` in the source table.
 """
 function rownumber end
 
+"""
+    groupby(obj, args...; kw...)
+
+Group `obj` into partitions specified by `args` and `kw`,
+which may vary according to the implementation for `obj`.
+
+The return value an iterable over the groups.
+"""
+function groupby end
+
 end # module
