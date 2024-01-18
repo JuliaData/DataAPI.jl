@@ -528,8 +528,6 @@ function rownumber end
 Group `obj` into partitions specified by `args` and `kw`,
 which may vary according to the implementation for `obj`.
 
-The return value an iterable over the groups.
-
 To avoid type piracy and method ambiguities, implementations of `groupby` 
 must restrict the first argument to a type defined in the same package. 
 """
