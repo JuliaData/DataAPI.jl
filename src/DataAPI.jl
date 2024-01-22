@@ -522,4 +522,8 @@ Return the row number of `row` in the source table.
 """
 function rownumber end
 
+# To avoid type piracy and method ambiguities, implementations of `groupby` 
+# must restrict the first argument to a type defined in the same package. 
+function groupby end
+
 end # module
