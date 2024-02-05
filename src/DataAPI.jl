@@ -323,20 +323,6 @@ The `write` field indicates whether modifying metadata with the [`metadata!`](@r
 metadatasupport(::Type) = (read=false, write=false)
 
 """
-    colmetadatasupport(T::Type)
-
-Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
-values of type `T` support column metadata.
-
-The `read` field indicates whether reading metadata with the [`colmetadata`](@ref)
-and [`colmetadatakeys`](@ref) functions is supported.
-
-The `write` field indicates whether modifying metadata with the [`colmetadata!`](@ref),
-[`deletecolmetadata!`](@ref), and [`emptycolmetadata!`](@ref) functions is supported.
-"""
-colmetadatasupport(::Type) = (read=false, write=false)
-
-"""
     metadata(x, key::AbstractString, [default]; style::Bool=false)
 
 Return metadata value associated with object `x` for key `key`. Throw an error
@@ -381,6 +367,9 @@ end
 Return an iterator of metadata keys for which `metadata(x, key)` returns a
 metadata value.
 Throw an error if `x` does not support reading metadata.
+
+If `metadatasupport(typeof(x)).read` or `metadatasupport(typeof(x)).write` return `true`
+this should also be defined.
 """
 function metadatakeys end
 
@@ -411,6 +400,20 @@ Delete all metadata for object `x`.
 Throw an error if `x` does not support metadata deletion.
 """
 function emptymetadata! end
+
+"""
+    colmetadatasupport(T::Type)
+
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
+values of type `T` support column metadata.
+
+The `read` field indicates whether reading metadata with the [`colmetadata`](@ref)
+and [`colmetadatakeys`](@ref) functions is supported.
+
+The `write` field indicates whether modifying metadata with the [`colmetadata!`](@ref),
+[`deletecolmetadata!`](@ref), and [`emptycolmetadata!`](@ref) functions is supported.
+"""
+colmetadatasupport(::Type) = (read=false, write=false)
 
 """
     colmetadata(x, col, key::AbstractString, [default]; style::Bool=false)
@@ -472,7 +475,7 @@ end
     colmetadatakeys(x, [col])
 
 If `col` is passed return an iterator of metadata keys for which
-`metadata(x, col, key)` returns a metadata value. Throw an error if `x` does not
+`colmetadata(x, col, key)` returns a metadata value. Throw an error if `x` does not
 support reading column metadata or if `col` is not a column of `x`.
 
 `col` must have a type that is supported by table `x` for column indexing.
@@ -481,6 +484,9 @@ Following the Tables.jl contract `Symbol` and `Int` are always allowed.
 If `col` is not passed return an iterator of `col => colmetadatakeys(x, col)`
 pairs for all columns that have metadata, where `col` are `Symbol`.
 If `x` does not support column metadata return `()`.
+
+This method must be defined if `colmetadatasupport(typeof(x)).read` or
+`colmetadatasupport(typeof(x)).write` return `true`.
 """
 function colmetadatakeys end
 
@@ -514,6 +520,116 @@ If `col` is not passed delete all column level metadata for table `x`.
 Throw an error if `x` does not support metadata deletion for column `col`.
 """
 function emptycolmetadata! end
+
+"""
+    dimmetadatasupport(T::Type, dim::Int)
+
+Return a `NamedTuple{(:read, :write), Tuple{Bool, Bool}}` indicating whether
+values of type `T` support metadata correspond to dimension `dim`.
+
+The `read` field indicates whether reading metadata with the [`dimmetadata`](@ref)
+and [`dimmetadatakeys`]](@ref) functions is supported.
+
+The `write` field indicates whether modifying metadata with the [`dimmetadata!`](@ref),
+[`deletemetadata!`](@ref), and [`emptymetadata!`](@ref) functions is supported.
+"""
+dimmetadatasupport(::Type, i::Int) = (read=false, write=false)
+
+"""
+    dimmetadata(x, dim::Int, key::AbstractString, [default]; style::Bool=false)
+
+Return metadata value associated with object `x` for dimension `dim` and key `key`.
+Throw an error if `x` does not support reading metadata for dimension `dim` or `x`
+supports reading metadata, but does not have a mapping for dimension `dim` for `key`.
+
+If `style=true` return a tuple of metadata value and metadata style. Metadata
+style is an additional information about the kind of metadata that is stored for
+the `key`.
+
+$STYLE_INFO
+
+If `default` is passed then return it if `x` supports reading metadata and has
+dimension `dim` but mapping for `key` is missing.
+If `style=true` return `(default, :default)`.
+"""
+function dimmetadata end
+
+"""
+    dimmetadata(x, [dim::Int]; style::Bool=false)
+
+If `dim` is not passed, return a dictionary mapping dimensions that have
+associated metadata to dictionaries mapping all metadata keys to metadata
+values associated with object `x` for a given dimension, so that
+`colmetadata(x)[dim][key] == dimmetadata(x, dim, key)`.
+
+If `dim` is passed return a dictionary mapping all column metadata keys
+to metadata values associated with dimension `dim` of object `x`, so that
+`colmetadata(x, dim)[key] == dimmetadata(x, dim, key)`.
+Throw an error if `x` does not support reading metadata for dimension `dim`
+or `dim` is not dimension of `x`.
+
+If `style=true` values are tuples of metadata value and metadata style. Metadata
+style is an additional information about the kind of metadata that is stored for
+the `key`.
+
+$STYLE_INFO
+
+The returned object may be freshly allocated on each call to `dimmetadata` and
+is considered to be owned by `x` so it must not be modified.
+"""
+function dimmetadata(x::T, dim::Int; style::Bool=false) where {T}
+    if !dimmetadatasupport(T, dim).read
+        throw(ArgumentError("Objects of type $T do not support reading dimension metadata"))
+    end
+    return Dict(key => dimmetadata(x, dim, key, style=style) for key in dimmetadatakeys(x, dim))
+end
+function dimmetadata(x; style::Bool=false)
+    Tuple(dimmetadata(x, dim; style=style) for dim in 1:ndims(x))
+end
+
+"""
+    dimmetadatakeys(x, [dim::Int])
+
+If `dim` is passed return an iterator of metadata keys for which
+`dimmetadata(x, dim, key)` returns a metadata value. Throw an error if `x` does not
+support reading dimension metadata or if `dim` is not a dimension of `x`.
+
+If `dim` is not passed return an iterator of `dim => dimmetadatakeys(x, dim)`
+pairs for all dimensions that have metadata.
+
+This method must be defined if `dimmetadatasupport(typeof(x)).read` or
+`dimmetadatasupport(typeof(x)).write` return `true`.
+"""
+function dimmetadatakeys end
+
+"""
+    dimmetadata!(x, dim::Int, key::AbstractString, value; style::Symbol=:default)
+
+Set metadata for object `x` for dimension `dim` for key `key` to have value `value`
+and style `style` (`:default` by default) and return `x`.
+Throw an error if `x` does not support setting metadata for dimension `dim`.
+
+$STYLE_INFO
+"""
+function dimmetadata! end
+
+"""
+    deletedimmetadata!(x, dim::Int, key::AbstractString)
+
+Delete metadata for object `x` for dimension `dim` for key `key` and return `x`
+(if metadata for `key` is not present do not perform any action).
+Throw an error if `x` does not support metadata deletion for dimension `dim`.
+"""
+function deletedimmetadata! end
+
+"""
+    emptydimmetadata!(x, dim::Int)
+
+Delete all metadata for object `x` for to dimension `dim` and return `x`.
+If `dim` is not passed delete all dimension level metadata for table `x`.
+Throw an error if `x` does not support metadata deletion for dimension `dim`.
+"""
+function emptydimmetadata! end
 
 """
     rownumber(row)
